@@ -1,10 +1,10 @@
 {
 		"name": "ADS1110",
-		"frameworks": "Arduino",
+		"frameworks": "AVR",
 		"keywords": "ADS1110, I2C, ADC, 16-BIT",
 		"description": "Driver for ADS1110: 16-bit ADC with PGA and I2C Interface",
-		"url": "http://www.__________________.html",
-		"downloadUrl": "http://www.__________.zip",
+		"url": "_______________________",
+		"downloadUrl": "https://github.com/nadavmatalon/ADS1110/archive/master.zip",
 		"authors":
 		{
 		        "name": "Nadav Matalon",
