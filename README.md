@@ -4,8 +4,8 @@
 The __ADS1110__ is a 16-Bit Single-Channel (Single-Ended or Differential) ADC IC with Onboard Reference (2.048V), PGA & HW I2C capabilities
 in a SOT-23-6 package.
 
-This library contains a driver for the ADS1110 offering complete control over all its Configuration Settings and giving the user the 
-ability to rcieve either raw data, voltage reading or percentage reading.
+This library contains a driver for the ADS1110 offering control over all its Configuration Settings and giving the user the 
+ability to recieve either raw data, a voltage reading or a percentage reading from the device either in Single-Shot or Continuous mode.
 
 
 ## Repository Contents
