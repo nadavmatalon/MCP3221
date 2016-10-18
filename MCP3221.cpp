@@ -45,10 +45,13 @@ __asm volatile ("nop");
 MCP3221::MCP3221(int devAddr) {
     _devAddr    = devAddr;
     _vRef       = DEFAULT_VREF;
+    _res1       = 0;
+    _res2       = 0;
     _alpha      = DEFAULT_ALPHA;
     _smoothing  = EMAVG;
     _numSamples = MAX_NUM_SAMPLES;
     _samples[_numSamples] = { 0 };
+    _comBuffer  = COM_SUCCESS;
 }
 
 /*==============================================================================================================*

@@ -126,10 +126,9 @@ namespace Mcp3221 {
             unsigned int _vRef;
             unsigned int _res1;
             unsigned int _res2;
-            unsigned int _upperLimit;
             unsigned int _alpha;
-            byte         _numSamples;
             byte         _smoothing;        // change byte to smoothing_t?
+            byte         _numSamples;
             unsigned int _samples[];
             byte         _comBuffer;
 //            unsigned int getRollingAVG();
