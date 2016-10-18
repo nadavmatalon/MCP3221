@@ -1,10 +1,10 @@
 {
-		"name": "ADS1110",
+		"name": "MCP3221",
 		"frameworks": "AVR",
-		"keywords": "ADS1110, I2C, ADC, 16-BIT",
-		"description": "Driver for ADS1110: 16-bit ADC with PGA and I2C Interface",
+		"keywords": "MCP3221, ADC, I2C, 12-BIT",
+		"description": "Driver for MCP3221: 12-bit ADC with an I2C Interface",
 		"url": "_______________________",
-		"downloadUrl": "https://github.com/nadavmatalon/ADS1110/archive/master.zip",
+		"downloadUrl": "https://github.com/nadavmatalon/MCP3221/archive/master.zip",
 		"authors":
 		{
 		        "name": "Nadav Matalon",
@@ -13,6 +13,6 @@
 		"repository":
 		{
 		    "type": "git",
-		    "url": "https://github.com/NadavMatalon/ADS1110"
+		    "url": "https://github.com/NadavMatalon/MCP3221"
 		}
 }

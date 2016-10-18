@@ -1,17 +1,14 @@
 
-# ADS1110 AVR DRIVER LIBRARY
+# MCP3221 AVR DRIVER LIBRARY
 
-The __ADS1110__ is a 16-Bit Single-Channel (Single-Ended or Differential) ADC IC with Onboard Reference (2.048V), PGA & HW I2C capabilities
-in a SOT-23-6 package.
+The __MCP3221__ is a 12-Bit ADC IC with a hardware I2C interface in a SOT-23-5 package.
 
-This library contains a driver for the ADS1110 offering control over all its Configuration Settings and giving the user the 
-ability to recieve either raw data, a voltage reading or a percentage reading from the device either in Single-Shot or Continuous mode.
-
+This library contains a full driver for the MCP3221 exposing all its available features.
 
 ## Repository Contents
 
-* **ADS1110.h** - Header file of the library.
-* **ADS1110.cpp** - Compilation file of the library.
+* **MCP3221.h** - Header file of the library.
+* **MCP3221.cpp** - Compilation file of the library.
 * **/examples** - Contains an example sketch for testing all Configuration Settings & Modes of Operation controllable by the library.
 * **/extras** - Complementary documentation (End-User License, etc.)
 * **keywords.txt** - Keywords for this library which will be highlighted in sketches within the Arduino IDE. 
@@ -22,17 +19,15 @@ ability to recieve either raw data, a voltage reading or a percentage reading fr
 
 ## HOOK-UP
 
-* __PIN 1__ - Connect __V+__ to voltage source to be measured.
-* __PIN 2__ - Connect __GND__ to Arduino GND.
-* __PIN 3__ - Connect __SCL__ to Arduino PIN A5 with a 2K2 pull-up resistor.
-* __PIN 4__ - Conntect __SDA__ to Arduino PIN A4 with a 2K2 pull-up resistor.
-* __PIN 5__ - Connect __VCC__ to Arduino 5V output.
-* __PIN 6__ - Connect __V-__ either to: (1) Arduino GND (for Single-Ended voltage readings ranging 0-2.048V); or to (2) an external voltage reference of 2.048V (for Single-Ended voltage readings ranging 0-4.096V); or to (3) A 'negative' input (for differential voltage readings between positive and 'negative' inputs).
+* __PIN 1 (VCC/VREF)__ - Serves as both Power Supply input and Voltage Reference for the ADC. Connect to a Power Source (5.5V max) - e.g. 4.096V for exact 1mV per measurement unit or to the Arduino 5V Output pin.
+* __PIN 2 (GND)__ - GND
+* __PIN 3 (VIN)__ - Connect input voltage to be measured (RANGE: GND - VCC, Min: 0V, Max: 5.5V). For higher voltage readings (Min: 8.444, Max: 12.881), use a voltage divider (Resistor 1: 10K, Resisor 2: 4K7)
+* __PIN 4 (SDA)__ - Conntect __SDA__ to Arduino PIN A4 with a 2K2 (400MHz I2C Bus) or 10K (100MHz I2C Bus) pull-up resistor
+* __PIN 5 (SCL)__ - Connect to Arduino PIN A5 with a 2K2 (400MHz I2C Bus) or 10K (100MHz I2C Bus) pull-up resistor
 
->__Note__: The 'negative' input is put in brackets here because it isn't a 'real' negative voltage - 
-i.e. with relation to the circuit's common ground - only with relation to the positive input side!
+* __I2C BUS SPEED__ - For 'Fast' I2C Bus speed (400MHz) use 2K2 pull-up resistors on the SDA & SCL lines. For 'Standard' I2C Bus speed use 10K pull-up resistors on these lines.  
 
-* __DECOUPING__: Connect a 0.1uF Ceramic Capacitor between VCC & GND PINS.
+* __DECOUPING__: Minimal decoupling consists of a 0.1uF Ceramic Capacitor between the VCC & GND PINS. For improved performance, add a 1uF and a 10uF Ceramic Capacitors as well across these pins.
 
 
 ## I2C COMMUNICATION
@@ -40,7 +35,7 @@ i.e. with relation to the circuit's common ground - only with relation to the po
 >__INPORTANT__: This library uses the '[WSWire](https://github.com/steamfire/WSWireLib/tree/master/Library/WSWire)' library for I2C communication 
 between the contoller IC (Master) and thethe ADS1110 (Slave), so it is NECESSARY to have it installed prior to using the current libraty. 
 >
->Alternatively, if you wish to use the '[Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire)' - or any other I2C library for that matter - simply change the following line the the 'ADS1110.h' file:
+>Alternatively, if you wish to use the '[Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire)' - or any other I2C library for that matter - simply change the following line the the 'MCP9802.h' file:
 ```
 #include <WSWire.h>
 ```
@@ -49,24 +44,24 @@ between the contoller IC (Master) and thethe ADS1110 (Slave), so it is NECESSARY
 #include <Wire.h>  // or to whatever I2C library name you are using.
 ```
 
-> As noted above, whichever library you intend to use for this purpose __must be alredy installed__ for the ADS1110 library to work.
+> As noted above, whichever library you intend to use for this purpose __must be alredy installed__ for the MCP9802 library to work.
 
 
 ## I2C ADDRESSES
 
-Each ADS1110 has 1 of 8 possible I2C addresses (factory hardwired & recognized by its specific part number & top marking 
+Each MCP3221 has 1 of 8 possible I2C addresses (factory hardwired & recognized by its specific part number & top marking 
 on the package itself):
 
-| PART NO.  | BIN     | HEX  | DEC | MARKING |
-|-----------|---------|------|-----|---------|
-| ADS1110A0 | 1001000 | 0x48 | 72  | ED0     |
-| ADS1110A1 | 1001001 | 0x49 | 73  | ED1     |
-| ADS1110A2 | 1001010 | 0x4A | 74  | ED2     |
-| ADS1110A3 | 1001011 | 0x4B | 75  | ED3     |
-| ADS1110A4 | 1001100 | 0x4C | 76  | ED4     |
-| ADS1110A5 | 1001101 | 0x4D | 77  | ED5     |
-| ADS1110A6 | 1001110 | 0x4E | 78  | ED6     |
-| ADS1110A7 | 1001111 | 0x4F | 79  | ED7     |
+|PART NO.         | BIN      | HEX  | DEC | MARKING |
+|-----------------|----------|------|-----|---------|
+||MCP3221A0T-E/OT | 01001000 | 0x48 | 72  | GE      |
+| MCP3221A0T-E/OT | 01001001 | 0x49 | 73  | GH      |
+| MCP3221A0T-E/OT | 01001010 | 0x4A | 74  | GB      |
+| MCP3221A0T-E/OT | 01001000 | 0x4B | 75  | GC      |
+| MCP3221A0T-E/OT | 01001100 | 0x4C | 76  | GD      |
+| MCP3221A0T-E/OT | 01001101 | 0x4D | 77  | GA      |
+| MCP3221A0T-E/OT | 01001110 | 0x4E | 78  | GF      |
+| MCP3221A0T-E/OT | 01001111 | 0x4F | 79  | GG      |
 
 
 ## LIBRARY INSTALLATION & SETUP
@@ -76,27 +71,28 @@ Begin by installing the library either by using the Arduino IDE's Installation W
 Next, include the library at the top of the sketch as follows:
 
 ```
-#include <ADS1110.h>
+#include <MCP3221.h>
 ```
 
-At this point you can construct a new ADS1110 object use the following line (at the top of the sketch after the 'include' line):
+At this point you can construct a new MPC3221 object(s) by using the following command (at the top of the sketch after the 'include' line):
 
 ```
-ADS1110 device_name(device_address);
+MCP3221 device_name(device_address);
 ```
 
->__NOTE__: replace the '__device_name__' above with a name of your choice. Also, make sure to replace the variable '__device_address__' with 
-the specific I2C address of your device - see I2C ADDRESSES section above.
+>__NOTE__: replace the '__device_name__' above with a name of your choice. Also, make sure to replace the variable '__device_address__' with the specific I2C address of your device - see I2C ADDRESSES section above.
 
 
 ## LIBRARY FUNCTIONS
 
-With the library installed & included in the sketch, and an ADS1110 object initiallized, the following functions are available 
-(see the sketch itself for actual examples):
+With the library installed & included in the sketch, and an MCP3221 object initiallized, the following functions are available 
+(see the example sketch for a detailed implementation):
+
+__NOTE:__ All 'get' methods return some sort of value, while all 'set' methods return nothing. Nevertheless, ALL methods which use the I2C communication protocol implicitly update the library's I2C _comBuffer (=communication buffer) after each I2C transaction. The reason for this functional setup is that the said 'get' methods cannot return both the desired value from the device (e.g. current conversion data) and the I2C transaction's result simultaniously.  Consequently, if the relevant value hasn't been obtained by a particular 'get' method, simply check the content of the _comBuffer to see which error occured (0 indicates a successful I2C transaction, 1-6 indicate an error as listed below). 
 
 __ping();__                                  
 Parameters: None  
-Description: Searches for the ADS1110 at the defined I2C Bus address  
+Description: Searches for the MCP3221 at the pre-defined I2C Bus address  
 Returns: Byte containing the relevant success/error code as follows:  
 
 0 ... Success (no error)  
@@ -107,73 +103,42 @@ Returns: Byte containing the relevant success/error code as follows:
 5 ... Timed-out while trying to become Bus Master  
 6 ... Timed-out while waiting for data to be sent
 
-__configInfo();__  
-Parameters: None.  
-Description: Returns a printable String with the device's I2C address & current Configuration Settings (Gain, Sample Rate & Mode)  
-Returns: String
+__getTempC16();__  
+Parameters: None 
+Description: Returns current temperature reading in degrees Celsius times 16
+Returns: int
 
-__setGain();__  
-Parameters: GAIN_1 / GAIN_2 / GAIN_4 / GAIN_8  
-Description: Sets the Gain of the ADS1110 (i.e. 1 / 2 / 4 / 8)  
-Default: GAIN_1  
-Returns: Byte containing the relevant success/error code (see list above)
+__singleConC16();__  
+Parameters: None 
+Conditions: Only works in Single-Shot mode
+Description: Carries out a single conversion & returns a temperature reading in degrees Celsius times 16
+Returns: int
 
-__setRate();__  
-Parameters: SPS_15 / SPS_30 / SPS_60 / SPS_240  
-Description: Sets the Sample Rate of the ADS1110 (i.e. 15 / 30 / 60 / 240 Samples per Second)  
-Default: 15_SPS  
-Returns: Byte containing the relevant success/error code (see list above)
+__getHystC16();__  
+Parameters: None 
+Description: Returns the current Hysteresis register value in degrees Celsius times 16
+Returns: int
 
-__setMode ();__  
-Parameters: CONTINUOUS / SINGLE_SHOT  
-Description: Sets the device's Mode of Operation (i.e. Continuous Conversions/Single Conversion)  
-Default: CONTINUOUS  
-Returns: Byte containing the relevant success/error code (see list above)
-
-__reset();__  
-Parameters: None  
-Description: Resets the ADS1110 to its default Configuration Settings (namely: GAIN_1, 15_SPS, CONTINUOUS)  
-Returns: Byte containing the relevant success/error code (see list above)
-
-__singleCon();__  
-Parameters: None  
-Conditions: Works only in __SINGLE CONVERSION__ mode  
-Description: Obtains the result of a single conversion  
-Returns: Int with actual value if successful or -1 if error occured  
-
-__readData();__  
-Parameters: None  
-Description: Obtains the latest conversion result from the ADS1110  
-Returns: Int witg actual value if successful or -1 if error occured   
-
-__readVoltage();__  
-Parameters: None  
-Returns: Obtains the latest conversion result translated into Volts  
-Returns: Float with actual value if successful or -1 if error occured    
-
-__readPercentage();__  
-Parameters: None  
-Description: Obtains the latest conversion result translated into Percentage (0-100%)  
-Returns: Int with actual value if successful or -1 if error occured 
+__setHystC();__  
+Parameters: int (range: -55 to +125)
+Description: Sets the Hysteresis register value in degrees Celsius
+Returns: None
 
 
-And, lastly, if for whatever reason you wish to destruct an existing ADS1110 object, you can use the following line to do so:
+
+And, lastly, if for whatever reason you wish to destruct an existing MCP9802 object, you can use the following line to do so:
 
 ```
-~ADS1110 device_name();
+~MCP3221 device_name();
 ```
 
 
 ## RUNNING THE EXAMPLE SKETCH
 
-1) Hook-up the ADS1110 to the Arduino as explained above.
-2) If you like, connect a 10K potentiometer to the ADS1110 V+ PIN (potentimeter's first pin goes to GND, 
-middle pin to V+, and third pin to 5V).
-3) Upload the sketch to the Arduino.
-4) Open the Serial Communications Window (make sure the baud-rate is set to 9600).
-5) You should be able to see detailed feedback from running each of the possible functions of the library 
-(when you get to the part where readings are carried out, play with the potentiomer to check out changes 
-in the readings based on the input voltage).
+1) Hook-up the MCP3221 to the Arduino as explained above.
+2) Upload the Example Sketch to the Arduino.
+3) Open the Serial Communications Window (make sure the baud-rate is set to 9600).
+4) You should be able to see detailed feedback from running each of the public methods of the library. 
 
 
 ## BUG REPORTS
