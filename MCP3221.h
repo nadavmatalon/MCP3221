@@ -83,12 +83,12 @@ __asm volatile ("nop");
 
 namespace Mcp3221 {
     
-    const int          DATA_BYTES       =     2;     // number of data bytes requested from the device
+    const byte         DATA_BYTES       =     2;     // number of data bytes requested from the device
     const byte         MIN_CON_TIME     =    15;     // single conversion time with a small overhead (in uS)
     const byte         COM_SUCCESS      =     0;     // I2C communication success Code (No Error)
     const unsigned int MIN_VREF         =  2700;     // minimum Voltage Reference value in mV (same as VCC)
     const unsigned int MAX_VREF         =  5500;     // minimum Voltage Reference value in mV (same as VCC)
-    const int          DEFAULT_VREF     =  4096;     // default Voltage Reference value in mV (same as VCC)
+    const unsigned int DEFAULT_VREF     =  4096;     // default Voltage Reference value in mV (same as VCC)
     const unsigned int MIN_ALPHA        =     1;     // minimum value of alpha (slowest change) (for EMAVG)
     const unsigned int MAX_ALPHA        =   256;     // maximum value of alpha (raw change/no filter) (for EMAVG)
     const unsigned int DEFAULT_ALPHA    =   178;     // default value of alpha (for EMAVG)
@@ -103,7 +103,7 @@ namespace Mcp3221 {
     
     class MCP3221 {
         public:
-            MCP3221(int devAddr);
+            MCP3221(byte devAddr);
             ~MCP3221();
             byte ping();
             unsigned int getVref();
@@ -122,7 +122,7 @@ namespace Mcp3221 {
             void         setNumSamples(byte newNumSamples);
             void         setSmoothingMethod(smoothing_t newSmoothingMethod);
         private:
-            int          _devAddr;
+            byte          _devAddr;
             unsigned int _vRef;
             unsigned int _res1;
             unsigned int _res2;

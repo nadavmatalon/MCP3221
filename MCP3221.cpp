@@ -42,7 +42,7 @@ __asm volatile ("nop");
     CONSTRUCTOR
  *==============================================================================================================*/
 
-MCP3221::MCP3221(int devAddr) {
+MCP3221::MCP3221(byte devAddr) {
     _devAddr    = devAddr;
     _vRef       = DEFAULT_VREF;
     _res1       = 0;

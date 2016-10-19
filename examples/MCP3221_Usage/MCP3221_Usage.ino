@@ -1,12 +1,12 @@
 #include "MCP3221.h"
 
-#define DEV_ADDR  0x4D                  // B01001101, DEC: 77 - I2C READ ADDRESS of the MCP3221 (Change as needed based on specific device part number)
+const byte DEV_ADDR = 0x4D;                 // B01001101, DEC: 77 - I2C READ ADDRESS of the MCP3221 (Change as needed based on specific device part number)
 
-// #define    MCP3221_CONVERSE 0x4C     // B01001100, DEC: 76 - I2C WRITE ADDRESS of the MCP3221 (Change as needed based on specific device part number)
+//const byte DEV_CONVERSE = 0x4C;            // B01001100, DEC: 76 - I2C WRITE ADDRESS of the MCP3221 (Change as needed based on specific device part number)
 
-                                        // (Another address option:  B10011011, 0x9B, DEC: 155 - Supposedly the READ address)
+                                            // (Another address option:  B10011011, 0x9B, DEC: 155 - Supposedly the READ address)
 
-MCP3221 mcp3221(DEV_ADDR);          // Constructs the MCP3221 object with the above address
+MCP3221 mcp3221(DEV_ADDR);                  // Constructs the MCP3221 object with the above address
 
 unsigned int reading, reading12V;
 
