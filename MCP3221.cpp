@@ -51,7 +51,7 @@ MCP3221::MCP3221(byte devAddr) {
     _smoothing  = EMAVG;
     _numSamples = MAX_NUM_SAMPLES;
     _samples[_numSamples] = { 0 };
-    _comBuffer  = COM_SUCCESS;
+    _comBuffer  = ping();
 }
 
 /*==============================================================================================================*
@@ -64,7 +64,7 @@ MCP3221::~MCP3221() {}
     PING (0 = SUCCESS / 1,2,... = I2C ERROR CODE)
  *==============================================================================================================*/
 
-// See meaning of I2C Error Code values in README
+// See meaning of I2C Error Code return values in README
 
 byte MCP3221::ping() {
     Wire.beginTransmission(_devAddr);
