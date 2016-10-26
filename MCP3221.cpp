@@ -51,7 +51,7 @@ MCP3221::MCP3221(byte devAddr) {
     _smoothing  = EMAVG;
     _numSamples = MAX_NUM_SAMPLES;
     _samples[_numSamples] = { 0 };
-    _comBuffer  = ping();
+    _comBuffer  = COM_SUCCESS;
 }
 
 /*==============================================================================================================*
