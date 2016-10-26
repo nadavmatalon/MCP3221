@@ -97,7 +97,7 @@ At this point you can construct a new MPC3221 object(s) by using the following c
 MCP3221 device_name(device_address);
 ```
 
->__NOTE__: replace '__device_name__' with a name of your choice. Also, make sure to replace the variable '__device_address__' with the specific I2C address of your device if needed (see I2C ADDRESSES section above).
+>Replace '__device_name__' with a name of your choice. Also, make sure to replace the variable '__device_address__' with the specific I2C address of your device if needed (see I2C ADDRESSES section above).
 
 
 ## LIBRARY FUNCTIONS
@@ -156,7 +156,7 @@ If you want to destruct an instantiated MCP3221 object, you can use the followin
 ```
 ~MCP3221 device_name();
 ```
->__NOTE__: replace '__device_name__' with the name of your MCP3221 device.
+>Replace '__device_name__' with the name of your MCP3221 device.
 
 ## Extended Functionality*
 
@@ -181,7 +181,7 @@ Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PString
 
 ## BUG REPORTS
 
-Please report any issues/bugs/suggestions at the 'Issues' section of this Github repository.
+Please report any issues/bugs/suggestions at the [Issues](https://github.com/nadavmatalon/MCP3221/issues) section of this Github repository.
 
 ## TODO
 

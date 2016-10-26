@@ -127,7 +127,7 @@ namespace Mcp3221 {
             unsigned int _res1;
             unsigned int _res2;
             unsigned int _alpha;
-            byte         _smoothing;        // change byte to smoothing_t?
+            byte         _smoothing;
             byte         _numSamples;
             unsigned int _samples[];
             byte         _comBuffer;

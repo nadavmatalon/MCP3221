@@ -181,7 +181,7 @@ void MCP3221::setSmoothingMethod(smoothing_t newSmoothingMethod) {     // PARAMS
 unsigned int MCP3221::getData() {
     unsigned int data;
     Wire.requestFrom(_devAddr, DATA_BYTES);
-    if (Wire.available() == DATA_BYTES) data = (Wire.read() << 8) + (Wire.read());
+    if (Wire.available() == DATA_BYTES) data = (Wire.read() << 8) | (Wire.read());
     return data;
 }
 
