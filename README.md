@@ -182,10 +182,10 @@ Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PString
 
 ## RUNNING THE EXAMPLE SKETCH
 
-1) Hook-up the MCP3221 to the Arduino as explained in the Example Sketch.  
-2) Upload the Example Sketch to the Arduino.  
-3) Open the Serial Communications Window (make sure the baud-rate is set to 9600).  
-4) You should be able to see detailed feedback from running each of the public methods of the library.  
+1) Start the Arduino IDE and open the relevant example sketch  
+1) Hook-up the MCP3221 to the Arduino as explained in the sketch's notes   
+2) Upload the sketch to the Arduino  
+3) Open the Serial Communications Window (make sure the baud-rate is set to 9600 or change it in the sketch to match your Serial Port's buad-rate)  
 
 ## BUG REPORTS
 
