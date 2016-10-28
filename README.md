@@ -20,8 +20,8 @@ This library contains a complete driver for the MCP3221 exposing all its availab
 - **MCP3221.h** - Library Header file.
 - **MCP3221.cpp** - Library Compilation.
 - **/utility** 
-  - **MCP3221InfoStr.h** - Header file containing a functional extention of the library to include generating printable information String (see Note #3 below).
-  - **MCP3221ComStr.h** - Header file containing a functional extention of the library to include generating a printable I2C Communication Result String (see Note #4 below).
+  - **MCP3221InfoStr.h** - Header file containing a functional extention of the library to include generating printable information String (see Note #2 below).
+  - **MCP3221ComStr.h** - Header file containing a functional extention of the library to include generating a printable I2C Communication Result String (see Note #3 below).
   - **MCP3221_PString.h** - Header file for PString class (lighter alternative to String class) 
   - **MCP3221_PString.cpp** - Compilation file for PString class (lighter alternative to String class) 
 - **/examples**   
@@ -91,18 +91,29 @@ Next, include the library at the top of the sketch as follows:
 #include "MCP3221.h"
 ```
 
-At this point you can construct a new MPC3221 object(s) by using the following command (at the top of the sketch after the 'include' line):
+At this point you can construct a new MPC3221 instance(s) by using the following command (at the top of the sketch after the 'include' line):
 
 ```
 MCP3221 device_name(device_address);
 ```
 
->Replace '__device_name__' with a name of your choice. Also, make sure to replace the variable '__device_address__' with the specific I2C address of your device if needed (see I2C ADDRESSES section above).
+>Replace '__device_name__' with a name of your choice. Also, make sure to replace '__device_address__' with the specific I2C address of your device if needed (see I2C ADDRESSES section above).
 
+
+Next, make sure to inlude an instruction for initializing the I2C Bus for the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library, as follows:
+
+(There's no need to include the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library at the top of the sketch as it's already included by the MCP3221 Library)
+
+```
+void setup() {
+    Wire.begin();
+    // ...other setup code...
+}
+```
 
 ## LIBRARY FUNCTIONS
 
-With the library installed & included in the sketch, and an MCP3221 object initiallized, the following functions are available (see the usage example sketch for a detailed implementation):
+With the library installed & included in the sketch, and an MCP3221 instance created, the following functions are available (see the usage example sketch for a detailed implementation):
 
 __Note About Methods' Return Values:__  
 All 'get' methods return some sort of value (e.g. temp reading, hysteresis setting, etc.), while all 'set' methods return nothing. Nevertheless, ALL methods implicitly update the library's __I2C _comBuffer__ (=communication buffer) after each I2C transmission. The reason for this functional design is to maintain structural coherance between the 'get' and 'set' methods. As 'get' methods cannot return both the desired value and the I2C transmission's result simultaniously. Consequently, if the relevant value hasn't been obtained by a particular 'get' method, the user can simply check the content of the _comBuffer to see what error occured. Similarly, it is possible to check if a particular setting has been successfully applied via a 'set' method either by preforming the corresponding 'get' method - e.g. getHystC() after using setHystC() - or by checking the content of the _comBuffer (0 indicates a successful transmission, 1-6 indicate an error as listed below). 
@@ -119,9 +130,6 @@ Description:&nbsp;&nbsp;&nbsp;Searches for the MCP3221 at the pre-defined I2C Bu
 6  ...  Timed-out while waiting for data to be sent  
 \>6 ... Unlisted error (potential future implementation/s)<br>
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte  
-
-
-
 
 
 
@@ -156,7 +164,7 @@ If you want to destruct an instantiated MCP3221 object, you can use the followin
 ```
 ~MCP3221 device_name();
 ```
->Replace '__device_name__' with the name of your MCP3221 device.
+>Replace '__device_name__' with the name of your MCP3221 instance.
 
 ## Extended Functionality*
 
@@ -174,10 +182,10 @@ Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PString
 
 ## RUNNING THE EXAMPLE SKETCH
 
-1) Hook-up the MCP3221 to the Arduino as explained above.
-2) Upload the Example Sketch to the Arduino.
-3) Open the Serial Communications Window (make sure the baud-rate is set to 9600).
-4) You should be able to see detailed feedback from running each of the public methods of the library. 
+1) Hook-up the MCP3221 to the Arduino as explained in the Example Sketch.  
+2) Upload the Example Sketch to the Arduino.  
+3) Open the Serial Communications Window (make sure the baud-rate is set to 9600).  
+4) You should be able to see detailed feedback from running each of the public methods of the library.  
 
 ## BUG REPORTS
 
