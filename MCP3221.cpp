@@ -225,8 +225,7 @@ unsigned int MCP3221::getData() {
 unsigned int MCP3221::getVoltage() {
     if (_smoothing == EMAVG) {
         static unsigned int emAvg = getData();
-        delayMicroseconds(MIN_CON_TIME * 2);
-        emAvg = (_alpha * (unsigned long)emAvg + (256 - _alpha) * (unsigned long)emAvg) / 256;
+        emAvg = (_alpha * (unsigned long)getData() + (MAX_ALPHA - _alpha) * (unsigned long)emAvg) / MAX_ALPHA;
         return calcVoltage(emAvg);
     } else if (_smoothing == ROLLING_AVG) {
         if (_samples[0] != 0) return updateRollingAVG();
@@ -235,9 +234,6 @@ unsigned int MCP3221::getVoltage() {
         return calcVoltage(getData());
     }
 }
-
-// first time - get rolling average
-// rest - update rolling average
 
 /*==============================================================================================================*
     CALCULATE VOLTAGE FROM READING (mV)
