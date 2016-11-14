@@ -88,6 +88,8 @@ namespace Mcp3221 {
     const byte         COM_SUCCESS      =     0;     // I2C communication success Code (No Error)
     const unsigned int MIN_VREF         =  2700;     // minimum Voltage Reference value in mV (same as VCC)
     const unsigned int MAX_VREF         =  5500;     // minimum Voltage Reference value in mV (same as VCC)
+    const unsigned int DEFAULT_RES_1    = 10000;     // default Resistor 1 value (in Ω) of voltage divider for 12V readings
+    const unsigned int DEFAULT_RES_2    =  4700;     // default Resistor 2 value (in Ω) of voltage divider for 12V readings
     const unsigned int DEFAULT_VREF     =  4096;     // default Voltage Reference value in mV (same as VCC)
     const unsigned int MIN_ALPHA        =     1;     // minimum value of alpha (slowest change) (for EMAVG)
     const unsigned int MAX_ALPHA        =   256;     // maximum value of alpha (raw change/no filter) (for EMAVG)
@@ -96,14 +98,28 @@ namespace Mcp3221 {
     const byte         MAX_NUM_SAMPLES  =    20;     // maximum number of samples (for Rolling-Average smoothing)
 
     typedef enum:byte {
-        NONE        = 0,
-        ROLLING_AVG = 1,
-        EMAVG       = 2   // Default
+        VOLTAGE_INPUT_5V  = 0,  // default
+        VOLTAGE_INPUT_12V = 1
+    } voltage_input_t;
+
+    typedef enum:byte {
+        NO_SMOOTHING = 0,
+        ROLLING_AVG  = 1,
+        EMAVG        = 2     // Default
     } smoothing_t;
-    
+
     class MCP3221 {
         public:
-            MCP3221(byte devAddr);
+            MCP3221(
+                    byte devAddr,
+                    unsigned int vRef  = DEFAULT_VREF,
+                    unsigned int res1  = DEFAULT_RES_1,
+                    unsigned int res2  = DEFAULT_RES_2,
+                    unsigned int alpha = DEFAULT_ALPHA,
+                    voltage_input_t voltageInput = VOLTAGE_INPUT_5V,
+                    smoothing_t smoothing_type = EMAVG,
+                    byte numSamples    = MAX_NUM_SAMPLES
+                   );
             ~MCP3221();
             byte ping();
             unsigned int getVref();
@@ -111,31 +127,27 @@ namespace Mcp3221 {
             unsigned int getRes2();
             unsigned int getAlpha();
             byte         getNumSamples();
+            byte         getVoltageInput();
             byte         getSmoothingMethod();
             unsigned int getData();
-//            unsigned int getVoltage();
+            unsigned int getVoltage();
             byte         getComResult();
             void         setVref(unsigned int newVref);
             void         setRes1(unsigned int newRes1);
             void         setRes2(unsigned int newRes2);
             void         setAlpha(unsigned int newAlpha);
             void         setNumSamples(byte newNumSamples);
+            void         setVoltageInput(voltage_input_t newVoltageInput);
             void         setSmoothingMethod(smoothing_t newSmoothingMethod);
         private:
-            byte          _devAddr;
-            unsigned int _vRef;
-            unsigned int _res1;
-            unsigned int _res2;
-            unsigned int _alpha;
-            byte         _smoothing;
-            byte         _numSamples;
+            byte         _devAddr, _voltageInput, _smoothing, _numSamples, _comBuffer;
+            unsigned int _vRef, _res1, _res2, _alpha;
             unsigned int _samples[];
-            byte         _comBuffer;
-//            unsigned int getRollingAVG();
-//            unsigned int updateRollingAVG();
-//            unsigned int getEMAVG();
+            unsigned int calcVoltage(unsigned int readingData);
+            unsigned int getRollingAVG();
+            unsigned int updateRollingAVG();
             friend       MCP3221_PString MCP3221ComStr(const MCP3221&);
-            friend       MCP3221_PString MCP3221InfoStr(const MCP3221&);
+            friend       MCP3221_PString MCP3221InfoStr(const MCP3221&);    // create/update the str
     };
 }
 

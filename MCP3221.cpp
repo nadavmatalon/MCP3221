@@ -42,16 +42,33 @@ __asm volatile ("nop");
     CONSTRUCTOR
  *==============================================================================================================*/
 
-MCP3221::MCP3221(byte devAddr) {
-    _devAddr    = devAddr;
-    _vRef       = DEFAULT_VREF;
-    _res1       = 0;
-    _res2       = 0;
-    _alpha      = DEFAULT_ALPHA;
-    _smoothing  = EMAVG;
-    _numSamples = MAX_NUM_SAMPLES;
+MCP3221::MCP3221(
+         byte devAddr,
+         unsigned int vRef,
+         unsigned int res1,
+         unsigned int res2,
+         unsigned int alpha,
+         voltage_input_t voltageInput,
+         smoothing_t smoothingMethod,
+         byte numSamples) :
+         _devAddr(devAddr),
+         _vRef(vRef),
+         _alpha(alpha),
+         _voltageInput(voltageInput),
+         _smoothing(smoothingMethod),
+         _numSamples(numSamples) {
     _samples[_numSamples] = { 0 };
-    _comBuffer  = COM_SUCCESS;
+    if (((res1 != 0) && (res2 != 0)) && (_voltageInput == VOLTAGE_INPUT_12V)) {
+        _res1 = res1;
+        _res2 = res2;
+    } else if (_voltageInput == VOLTAGE_INPUT_5V) {
+        _res1 = 0;
+        _res2 = 0;
+    } else {
+        _res1 = DEFAULT_RES_1;
+        _res2 = DEFAULT_RES_2;
+    }
+    _comBuffer = COM_SUCCESS;
 }
 
 /*==============================================================================================================*
@@ -112,6 +129,14 @@ byte MCP3221::getNumSamples() {
 }
 
 /*==============================================================================================================*
+    GET VOLTAGE INPUT (0 = VOLTAGE_INPUT_5V / 1 = VOLTAGE_INPUT_12V)
+ *==============================================================================================================*/
+
+byte MCP3221::getVoltageInput() {
+    return _voltageInput;
+}
+
+/*==============================================================================================================*
     GET SMOOTHING METHOD (0 = NONE / 1 = ROLLING-AVAREGE / 2 = EMAVG)
  *==============================================================================================================*/
 
@@ -148,13 +173,13 @@ void MCP3221::setRes2(unsigned int newRes2) {
     SET ALPHA (EMAVG SMOOTHING METHOD ONLY)
  *==============================================================================================================*/
 
-void MCP3221::setAlpha(unsigned int newAlpha) {                                    // PARAM RANGE: 1-256
+void MCP3221::setAlpha(unsigned int newAlpha) {                                      // PARAM RANGE: 1-256
     newAlpha = constrain(newAlpha, MIN_ALPHA, MAX_ALPHA);
     _alpha = newAlpha;
 }
 
 /*==============================================================================================================*
- SET NUMBER OF SAMPLES (ROLLING-AVAREGE SMOOTHING METHOD ONLY)
+    SET NUMBER OF SAMPLES (ROLLING-AVAREGE SMOOTHING METHOD ONLY)
  *==============================================================================================================*/
 
 void MCP3221::setNumSamples(byte newNumSamples) {                                    // PARAM RANGE: 1-20
@@ -164,10 +189,18 @@ void MCP3221::setNumSamples(byte newNumSamples) {                               
 }
 
 /*==============================================================================================================*
+    SET VOLTAGE INPUT
+ *==============================================================================================================*/
+
+void MCP3221::setVoltageInput(voltage_input_t newVoltageInput) { // PARAMS: VOLTAGE_INPUT_5V / VOLTAGE_INPUT_12V
+    _voltageInput = newVoltageInput;
+}
+
+/*==============================================================================================================*
     SET SMOOTHING METHOD
  *==============================================================================================================*/
 
-void MCP3221::setSmoothingMethod(smoothing_t newSmoothingMethod) {     // PARAMS: NONE / ROLLING / EMAVG
+void MCP3221::setSmoothingMethod(smoothing_t newSmoothingMethod) {   // PARAMS: NO_SMOOTHING / ROLLING / EMAVG
     _smoothing = newSmoothingMethod;
 }
 
@@ -185,76 +218,66 @@ unsigned int MCP3221::getData() {
     return data;
 }
 
-
-
-
-
-
-//
-//
-//
-///*==============================================================================================================*
-//    SINGLE VOLTAGE READING (Vref 4.096V: 2700 - 4096mV)
-// *==============================================================================================================*/
-//
-//unsigned int MCP3221::singleReading() {
-//    unsigned int reading = getData();
-//    if (_vRef == V_REF) return reading;
-//    else return round((float)(_vRef * reading) / 4096.0);
-//}
-//
-///*==============================================================================================================*
-//    CALCULATE 12V READING (Vref: 4.096V: 8444 - 12811mV)
-// *==============================================================================================================*/
-//
-//unsigned int MCP3221::calc12V(unsigned int reading) {
-//    return ((reading * (_vdRes1 + _vdRes2)) / _vdRes2);
-//}
-//
-///*==============================================================================================================*
-//    GET ROLLING AVERAGE OF MULTIPLE SAMPLE READINGS (mV)
-// *==============================================================================================================*/
-//
-//unsigned int MCP3221::getRollingAVG() {
-//    unsigned long sum = 0;
-//    for (byte i=_numSamples; i>0; i--) {
-//        _samples[i] = getData();
-//        delayMicroseconds(MIN_CON_TIME);
-//        sum += _samples[i];
-//    }
-//    return round((float)sum / (float)_numSamples);
-//}
-//
-///*==============================================================================================================*
-//    UPDATE ROLLING AVERAGE (mV)
-// *==============================================================================================================*/
-//
-//unsigned int MCP3221::updateRollingAVG() {
-//    unsigned int sum = 0;
-//    for (byte i=_numSamples-2; i>=0; i--) _samples[i+1] = _samples[i];  // drop last reading & rearrange array
-//    _samples[0] = getData();                                            // add a new sample
-//    for (byte j=_numSamples; j>0; j--) sum += _samples[j];              // aggregate all samples
-//    return round(sum / _numSamples);                                    // return average
-//}
-//
-///*==============================================================================================================*
-//    GET EXPONENTIAL MOVING AVERAGE (mV)
-// *==============================================================================================================*/
-//
-//unsigned int MCP3221::getEMAVG() {
-//    static unsigned int emAvg = getData();
-//    delayMicroseconds(MIN_CON_TIME * 2);
-//    emAvg = (_alpha * (unsigned long)emAvg + (256 - _alpha) * (unsigned long)emAvg) / 256;
-//    return emAvg;
-//}
-//
 /*==============================================================================================================*
-    GET LATEST I2C COMMUNICATION RESULT (0 = OK / >=1 = ERROR)
+    GET VOLTAGE (Vref 4.096V: 2700 - 4096mV)
+ *==============================================================================================================*/
+
+unsigned int MCP3221::getVoltage() {
+    if (_smoothing == EMAVG) {
+        static unsigned int emAvg = getData();
+        delayMicroseconds(MIN_CON_TIME * 2);
+        emAvg = (_alpha * (unsigned long)emAvg + (256 - _alpha) * (unsigned long)emAvg) / 256;
+        return calcVoltage(emAvg);
+    } else if (_smoothing == ROLLING_AVG) {
+        if (_samples[0] != 0) return updateRollingAVG();
+        else return getRollingAVG();
+    } else {
+        return calcVoltage(getData());
+    }
+}
+
+// first time - get rolling average
+// rest - update rolling average
+
+/*==============================================================================================================*
+    CALCULATE VOLTAGE FROM READING (mV)
+ *==============================================================================================================*/
+
+unsigned int MCP3221::calcVoltage(unsigned int readingData) {
+    if (_voltageInput == VOLTAGE_INPUT_5V) return round((_vRef / (float)DEFAULT_VREF) * readingData);
+    else return ((readingData * (_res1 + _res2)) / _res2);
+}
+
+/*==============================================================================================================*
+    GET ROLLING AVERAGE OF MULTIPLE SAMPLE READINGS (mV)
+ *==============================================================================================================*/
+
+unsigned int MCP3221::getRollingAVG() {
+    unsigned long sum = 0;
+    for (byte i=_numSamples; i>0; i--) {
+        _samples[i] = calcVoltage(getData());
+        delayMicroseconds(MIN_CON_TIME);
+        sum += _samples[i];
+    }
+    return round((float)sum / (float)_numSamples);
+}
+
+/*==============================================================================================================*
+    UPDATE ROLLING AVERAGE (mV)
+ *==============================================================================================================*/
+
+unsigned int MCP3221::updateRollingAVG() {
+    unsigned int sum = 0;
+    for (byte i=_numSamples-2; i>=0; i--) _samples[i+1] = _samples[i];  // drop last reading & rearrange array
+    _samples[0] = calcVoltage(getData());                               // add a new sample
+    for (byte j=_numSamples; j>0; j--) sum += _samples[j];              // aggregate all samples
+    return round(sum / _numSamples);                                    // return average
+}
+
+/*==============================================================================================================*
+    GET LATEST I2C COMMUNICATION RESULT (0 = OK / 1..7 = ERROR)
  *==============================================================================================================*/
 
 byte MCP3221::getComResult() {
     return _comBuffer;
 }
-
-
-
