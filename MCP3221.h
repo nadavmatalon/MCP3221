@@ -130,6 +130,7 @@ namespace Mcp3221 {
             byte         getNumSamples();
             byte         getVoltageInput();
             byte         getSmoothingMethod();
+            unsigned int getRawData();
             unsigned int getData();
             unsigned int getVoltage();
             byte         getComResult();
@@ -144,7 +145,7 @@ namespace Mcp3221 {
             byte         _devAddr, _voltageInput, _smoothing, _numSamples, _comBuffer;
             unsigned int _vRef, _res1, _res2, _alpha;
             unsigned int _samples[MAX_NUM_SAMPLES];
-            unsigned int calcVoltage(unsigned int readingData);
+            unsigned int smoothData(unsigned int rawData);
             friend       MCP3221_PString MCP3221ComStr(const MCP3221&);
             friend       MCP3221_PString MCP3221InfoStr(const MCP3221&);    // create/update the str
     };

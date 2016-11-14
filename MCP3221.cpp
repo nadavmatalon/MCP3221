@@ -195,6 +195,10 @@ void MCP3221::setNumSamples(byte newNumSamples) {                               
 
 void MCP3221::setVoltageInput(voltage_input_t newVoltageInput) { // PARAMS: VOLTAGE_INPUT_5V / VOLTAGE_INPUT_12V
     _voltageInput = newVoltageInput;
+    if (newVoltageInput == VOLTAGE_INPUT_12V) {
+        if (!_res1) _res1 = DEFAULT_RES_1;
+        if (!_res2) _res2 = DEFAULT_RES_2;
+    }
 }
 
 /*==============================================================================================================*
@@ -206,53 +210,59 @@ void MCP3221::setSmoothingMethod(smoothing_t newSmoothingMethod) {   // PARAMS: 
 }
 
 /*==============================================================================================================*
-    GET DATA
+    GET RAW DATA
  *==============================================================================================================*/
 
 //  SINGLE CONVERSION:         B10011010 / 0x9A / 154
 //  CONTINUOUS CONVERSION:     B10011011 / 0x9B / 155
 
-unsigned int MCP3221::getData() {
-    unsigned int data;
+unsigned int MCP3221::getRawData() {
+    unsigned int rawData = 0;
     Wire.requestFrom(_devAddr, DATA_BYTES);
-    if (Wire.available() == DATA_BYTES) data = (Wire.read() << 8) | (Wire.read());
-    return data;
+    if (Wire.available() == DATA_BYTES) rawData = (Wire.read() << 8) | (Wire.read());
+    return rawData;
 }
 
 /*==============================================================================================================*
-    GET VOLTAGE          (Vref 4.096V: 2700 - 4096mV)
+    SMOOTH DATA
  *==============================================================================================================*/
 
-unsigned int MCP3221::getVoltage() {
-    if (_smoothing == EMAVG) {
-        static unsigned int emAvg = getData();
-        emAvg = (_alpha * (unsigned long)getData() + (MAX_ALPHA - _alpha) * (unsigned long)emAvg) / MAX_ALPHA;
-        return calcVoltage(emAvg);
-    } else if (_smoothing == ROLLING_AVG) {
-        unsigned int average;
+unsigned int MCP3221::smoothData(unsigned int rawData) {
+    unsigned int smoothedData;
+    if (_smoothing == EMAVG) {                                                  // Exmponential Moving Average
+        static unsigned int emAvg = rawData;
+        emAvg = (_alpha * (unsigned long)rawData + (MAX_ALPHA - _alpha) * (unsigned long)emAvg) / MAX_ALPHA;
+        smoothedData = emAvg;
+    } else {                                                                    // Rolling-Average
         unsigned long sum = 0;
         if (_samples[_numSamples - 1] != 0) {
             for (byte i = 1; i<_numSamples; i++) _samples[i - 1] = _samples[i]; // drop last reading & rearrange array
-            _samples[_numSamples - 1] = calcVoltage(getData());                 // add a new sample at the end of array
+            _samples[_numSamples - 1] = rawData;                                // add a new sample at the end of array
             for (byte j=0; j<_numSamples; j++) sum += _samples[j];              // aggregate all samples
-            average = sum / _numSamples;                                        // calculate average
+            smoothedData = sum / _numSamples;                                   // calculate average
         } else {
-            average = getData();
-            for (byte i = 0; i<_numSamples; i++) _samples[i] = average;
+            for (byte i = 0; i<_numSamples; i++) _samples[i] = rawData;
+            smoothedData = rawData;
         }
-        return average;                                                         // return average
-    } else {
-        return calcVoltage(getData());
     }
+    return smoothedData;
 }
 
 /*==============================================================================================================*
-    CALCULATE VOLTAGE FROM READING (mV)
+    GET DATA
  *==============================================================================================================*/
 
-unsigned int MCP3221::calcVoltage(unsigned int readingData) {
-    if (_voltageInput == VOLTAGE_INPUT_5V) return round((_vRef / (float)DEFAULT_VREF) * readingData);
-    else return ((readingData * (_res1 + _res2)) / _res2);
+unsigned int MCP3221::getData() {
+    return (_smoothing == NO_SMOOTHING) ? getRawData() : smoothData(getRawData());
+}
+
+/*==============================================================================================================*
+    GET VOLTAGE  (Vref 4.096V: 2700 - 4096mV)
+ *==============================================================================================================*/
+
+unsigned int MCP3221::getVoltage() {
+    if (_voltageInput == VOLTAGE_INPUT_5V) return round((_vRef / (float)DEFAULT_VREF) * getData());
+    else return round(getData() * ((float)(_res1 + _res2) / _res2));
 }
 
 /*==============================================================================================================*
