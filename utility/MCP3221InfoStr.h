@@ -49,15 +49,15 @@ namespace Mcp3221 {
 
     const char infoStr0[]  PROGMEM = "\nMCP3221 DEVICE INFORMATION";
     const char infoStr1[]  PROGMEM = "\n--------------------------";
-    const char infoStr2[]  PROGMEM = "\nI2C ADDRESS:\t %d (%#X)";
-    const char infoStr3[]  PROGMEM = "\nI2C COM STATUS:\t %sCONNECTED";
-    const char infoStr4[]  PROGMEM = "\nVOLTAGE REFERENCE:\t %dmV";
-    const char infoStr5[]  PROGMEM = "\nVOLTAGE DIVIDER:\t %sUSED";
-    const char infoStr6[]  PROGMEM = "\nRESISTOR 1:\t %dR";
-    const char infoStr7[]  PROGMEM = "\nRESISTOR 1:\t %dR";
-    const char infoStr8[]  PROGMEM = "\nSMOOTHING METHOD:\t %s";
-    const char infoStr9[]  PROGMEM = "\nALPHA:\t\t %d";
-    const char infoStr10[] PROGMEM = "\nSAMPLES BUFFER:\t %d SAMPLES";
+    const char infoStr2[]  PROGMEM = "\nI2C ADDRESS:\t   %d (%#X)";
+    const char infoStr3[]  PROGMEM = "\nI2C COM STATUS:\t   %sCONNECTED";
+    const char infoStr4[]  PROGMEM = "\nVOLTAGE REFERENCE: %dmV";
+    const char infoStr5[]  PROGMEM = "\nSMOOTHING METHOD:  %s";
+    const char infoStr6[]  PROGMEM = "\nVOLTAGE INPUT:\t   %dV";
+    const char infoStr7[]  PROGMEM = "\nVD RESISTOR 1:\t   %dR";
+    const char infoStr8[]  PROGMEM = "\nVD RESISTOR 2:\t   %dR";
+    const char infoStr9[]  PROGMEM = "\nALPHA:\t\t   %d";
+    const char infoStr10[] PROGMEM = "\nSAMPLES BUFFER:\t   %d SAMPLES\n";
     const char errStr[]    PROGMEM = "\nI2C ERROR:\t ";
 
     const char * const infoStrs[NUM_OF_INFO_STR] PROGMEM = {
@@ -81,13 +81,10 @@ namespace Mcp3221 {
 
     MCP3221_PString MCP3221InfoStr(const MCP3221& devParams) {
         char * ptr;
-        char strBuffer[338];
+        char strBuffer[360];    // 338
         char devInfoBuffer[INFO_BUFFER_SIZE];
-        int  devAddr = devParams._devAddr;
         MCP3221_PString resultStr(strBuffer, sizeof(strBuffer));
-        MCP3221 mcp3221(devAddr);
-        unsigned int vRef = mcp3221.getVref();
-        smoothing_t smoothing = mcp3221.getSmoothingMethod();
+        MCP3221 mcp3221(devParams._devAddr);
         byte comErrCode = mcp3221.ping();
         unsigned int res1 = mcp3221.getRes1();
         unsigned int res2 = mcp3221.getRes2();
@@ -95,24 +92,22 @@ namespace Mcp3221 {
         for (byte i=0; i<4; i++) {
             ptr = (char *) pgm_read_word(&infoStrs[i]);
             if (i < 2)   snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr);
-            if (i == 2)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, devAddr, devAddr);
+            if (i == 2)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, devParams._devAddr, devParams._devAddr);
             if (i == 3)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, (comErrCode ? "NOT " : ""));
             resultStr += devInfoBuffer;
         }
         if (!comErrCode) {
             for (byte i=4; i<(NUM_OF_INFO_STR - 1); i++) {
                 ptr = (char *) pgm_read_word(&infoStrs[i]);
-                if (i == 4)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, vRef);
-                if (i == 5)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, ((res1 || res2) ? "" : " NOT"));
-                if (i == 6)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, (res1 || 0 ));
-                if (i == 7)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, (res2 || 0 ));
-                if (i == 8) {
-                    switch (smoothing) {
-                        case (NONE):        snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, "NONE"); i += 2; break;
-                        case (ROLLING_AVG): snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, "ROLLING-AVAREGE"); i++; break;
-                        case (EMAVG): snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, "EMAVG"); break;
-                    }
-                }
+                if (i == 4)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, devParams._vRef);
+                if (i == 5)  switch (devParams._smoothing) {
+                                case (NO_SMOOTHING): snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, "NO SMOOTHING"); break;
+                                case (ROLLING_AVG):  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, "ROLLING-AVAREGE"); break;
+                                case (EMAVG):        snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, "EMAVG"); break;
+                            }
+                if (i == 6)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, (devParams._voltageInput ? 12 : 5));
+                if (i == 7)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, devParams._res1);
+                if (i == 8)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, devParams._res2);
                 if (i == 9)  snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, devParams._alpha);
                 if (i == 10) snprintf_P(devInfoBuffer, INFO_BUFFER_SIZE, ptr, devParams._numSamples);
                 if (i != 11) resultStr += devInfoBuffer;
