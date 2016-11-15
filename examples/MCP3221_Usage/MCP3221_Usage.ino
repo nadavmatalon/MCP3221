@@ -74,10 +74,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "MCP3221.h"
 
-const byte DEV_ADDR = 0x48;                                           // I2C address of the MCP3221 (Change as needed)
-
-//const byte DEV_CONVERSE = 0x4C;            // B01001100, DEC: 76 - I2C WRITE ADDRESS of the MCP3221
-                                             // (Another address option:  B10011011, 0x9B, DEC: 155 - Supposedly the READ address)
+const byte DEV_ADDR = 0x4D;                                           // I2C address of the MCP3221 (Change if needed)
 
 MCP3221 mcp3221(DEV_ADDR);                                            // Constructs a new MCP3221 object with the relevant I2C address
 
@@ -98,18 +95,18 @@ void runTests() {
     Serial.print(F("\nGETTING CONFIGURATION\n"));
     testGetConfigData();
     printDivider();
-    Serial.print(F("\nSETTING CONFIGURATION\n"));
-    testSetConfigData();
-    printDivider();
-    Serial.print(F("\nGETTING DATA READINGN\n"));
+//    Serial.print(F("\nSETTING CONFIGURATION\n"));
+//    testSetConfigData();
+//    printDivider();
+    Serial.print(F("\nGETTING DATA READING\n"));
     testGetData();
     printDivider();
-    Serial.print(F("\nGETTING VOLTAGE READINGN\n"));
-    testGetVoltage();
-    printDivider();
-    Serial.print(F("\nTESTING DEVICE RESET\n"));
-    testReset();
-    printDivider();
+//    Serial.print(F("\nGETTING VOLTAGE READINGN\n"));
+//    testGetVoltage();
+//    printDivider();
+//    Serial.print(F("\nTESTING DEVICE RESET\n"));
+//    testReset();
+//    printDivider();
 }
 
 void testPingDevice() {
@@ -119,7 +116,25 @@ void testPingDevice() {
 }
 
 void testGetConfigData() {
-
+    Serial.print(F("\nVOLTAGE REFERENCE:\t"));
+    Serial.print(mcp3221.getVref());
+    Serial.print(F("mV\nSMOOTHING METHOD:\t"));
+    switch (mcp3221.getSmoothing()) {
+        case (0): Serial.print(F("NO SMOOTHING")); break;
+        case (1): Serial.print(F("ROLLING-AVERAGE")); break;
+        case (2): Serial.print(F("EMAVG")); break;
+    }
+    Serial.print(F("\nVOLTAGE INPUT:\t\t"));
+    Serial.print(mcp3221.getVinput());
+    Serial.print(F("mV\nVD RESISTOR 1:\t\t"));
+    Serial.print(mcp3221.getRes1());
+    Serial.print(F("R\nVD RESISTOR 2:\t\t"));
+    Serial.print(mcp3221.getRes2());
+    Serial.print(F("R\nALPHA:\t\t\t"));
+    Serial.print(mcp3221.getAlpha());
+    Serial.print(F("\nSAMPLES BUFFER:\t\t"));
+    Serial.print(mcp3221.getNumSamples());
+    Serial.print(F(" SAMPLES\n"));
 }
 
 void testSetConfigData() {
@@ -127,7 +142,9 @@ void testSetConfigData() {
 }
 
 void testGetData() {
-
+    Serial.print(F("\ndata:\t\t"));
+    Serial.print(mcp3221.getData());
+    Serial.print(F("\n\n"));
 }
 
 void testGetVoltage() {

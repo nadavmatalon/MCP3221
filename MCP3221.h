@@ -134,7 +134,7 @@ __asm volatile ("nop");
 #endif
 
 #include <Arduino.h>
-#include "WSWire.h"
+#include <Wire.h>
 #include "utility/MCP3221_PString.h"
 
 namespace Mcp3221 {
