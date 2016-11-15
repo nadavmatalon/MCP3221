@@ -79,10 +79,10 @@ MCP3221::MCP3221(
 MCP3221::~MCP3221() {}
 
 /*==============================================================================================================*
-    PING (0 = SUCCESS / 1,2,... = I2C ERROR CODE)
+    PING (0 = SUCCESS / 1, 2, ... = ERROR CODE)
  *==============================================================================================================*/
 
-// See meaning of I2C Error Code return values in README
+// See meaning of I2C Error Code values in README
 
 byte MCP3221::ping() {
     Wire.beginTransmission(_devAddr);
@@ -114,7 +114,7 @@ unsigned int MCP3221::getRes2() {
 }
 
 /*==============================================================================================================*
-    GET ALPHA (EMAVG ONLY, RANGE: 1 - 256)
+    GET ALPHA (RELEVANT ONLY FOR EMAVG SMOOTHING METHOD, RANGE: 1 - 256)
  *==============================================================================================================*/
 
 unsigned int MCP3221::getAlpha() {
@@ -122,7 +122,7 @@ unsigned int MCP3221::getAlpha() {
 }
 
 /*==============================================================================================================*
-    GET NUMBER OF SAMPLES (ROLLING-AVAREGE ONLY, 1-20 SAMPLES)
+    GET NUMBER OF SAMPLES (RELEVANT ONLY FOR ROLLING-AVAREGE SMOOTHING METHOD, RANGE: 1-20 SAMPLES)
  *==============================================================================================================*/
 
 byte MCP3221::getNumSamples() {
@@ -133,7 +133,7 @@ byte MCP3221::getNumSamples() {
     GET VOLTAGE INPUT (0 = VOLTAGE_INPUT_5V / 1 = VOLTAGE_INPUT_12V)
  *==============================================================================================================*/
 
-byte MCP3221::getVoltageInput() {
+byte MCP3221::getVinput() {
     return _voltageInput;
 }
 
@@ -141,8 +141,33 @@ byte MCP3221::getVoltageInput() {
     GET SMOOTHING METHOD (0 = NONE / 1 = ROLLING-AVAREGE / 2 = EMAVG)
  *==============================================================================================================*/
 
-byte MCP3221::getSmoothingMethod() {
+byte MCP3221::getSmoothing() {
     return _smoothing;
+}
+
+/*==============================================================================================================*
+    GET DATA
+ *==============================================================================================================*/
+
+unsigned int MCP3221::getData() {
+    return (_smoothing == NO_SMOOTHING) ? getRawData() : smoothData(getRawData());
+}
+
+/*==============================================================================================================*
+    GET VOLTAGE  (Vref 4.096V: 2700 - 4096mV)
+ *==============================================================================================================*/
+
+unsigned int MCP3221::getVoltage() {
+    if (_voltageInput == VOLTAGE_INPUT_5V) return round((_vRef / (float)DEFAULT_VREF) * getData());
+    else return round(getData() * ((float)(_res1 + _res2) / _res2));
+}
+
+/*==============================================================================================================*
+    GET LATEST I2C COMMUNICATION RESULT (0 = OK / 1, 2, ... = ERROR)
+ *==============================================================================================================*/
+
+byte MCP3221::getComResult() {
+    return _comBuffer;
 }
 
 /*==============================================================================================================*
@@ -171,7 +196,7 @@ void MCP3221::setRes2(unsigned int newRes2) {
 }
 
 /*==============================================================================================================*
-    SET ALPHA (EMAVG SMOOTHING METHOD ONLY)
+    SET ALPHA (RELEVANT ONLY FOR EMAVG SMOOTHING METHOD)
  *==============================================================================================================*/
 
 void MCP3221::setAlpha(unsigned int newAlpha) {                                      // PARAM RANGE: 1-256
@@ -180,7 +205,7 @@ void MCP3221::setAlpha(unsigned int newAlpha) {                                 
 }
 
 /*==============================================================================================================*
-    SET NUMBER OF SAMPLES (ROLLING-AVAREGE SMOOTHING METHOD ONLY)
+    SET NUMBER OF SAMPLES (RELEVANT ONLY FOR ROLLING-AVAREGE SMOOTHING METHOD)
  *==============================================================================================================*/
 
 void MCP3221::setNumSamples(byte newNumSamples) {                                    // PARAM RANGE: 1-20
@@ -190,10 +215,10 @@ void MCP3221::setNumSamples(byte newNumSamples) {                               
 }
 
 /*==============================================================================================================*
-    SET VOLTAGE INPUT
+    SET VOLTAGE INPUT (12V INPUT READINGS REQUIRE A HARDWARE VOLTAGE DIVIDER)
  *==============================================================================================================*/
 
-void MCP3221::setVoltageInput(voltage_input_t newVoltageInput) { // PARAMS: VOLTAGE_INPUT_5V / VOLTAGE_INPUT_12V
+void MCP3221::setVinput(voltage_input_t newVoltageInput) {     // PARAMS: VOLTAGE_INPUT_5V / VOLTAGE_INPUT_12V
     _voltageInput = newVoltageInput;
     if (newVoltageInput == VOLTAGE_INPUT_12V) {
         if (!_res1) _res1 = DEFAULT_RES_1;
@@ -205,8 +230,22 @@ void MCP3221::setVoltageInput(voltage_input_t newVoltageInput) { // PARAMS: VOLT
     SET SMOOTHING METHOD
  *==============================================================================================================*/
 
-void MCP3221::setSmoothingMethod(smoothing_t newSmoothingMethod) {   // PARAMS: NO_SMOOTHING / ROLLING / EMAVG
-    _smoothing = newSmoothingMethod;
+void MCP3221::setSmoothing(smoothing_t newSmoothing) {           // PARAMS: NO_SMOOTHING / ROLLING / EMAVG
+    _smoothing = newSmoothing;
+}
+
+/*==============================================================================================================*
+    RESET
+ *==============================================================================================================*/
+
+void MCP3221::reset() {
+    setVref(DEFAULT_VREF);
+    setAlpha(DEFAULT_ALPHA);
+    setVinput(VOLTAGE_INPUT_5V);
+    setSmoothing(EMAVG);
+    setRes1(0);
+    setRes2(0);
+    setNumSamples(DEFAULT_NUM_SAMPLES);
 }
 
 /*==============================================================================================================*
@@ -248,41 +287,3 @@ unsigned int MCP3221::smoothData(unsigned int rawData) {
     return smoothedData;
 }
 
-/*==============================================================================================================*
-    GET DATA
- *==============================================================================================================*/
-
-unsigned int MCP3221::getData() {
-    return (_smoothing == NO_SMOOTHING) ? getRawData() : smoothData(getRawData());
-}
-
-/*==============================================================================================================*
-    GET VOLTAGE  (Vref 4.096V: 2700 - 4096mV)
- *==============================================================================================================*/
-
-unsigned int MCP3221::getVoltage() {
-    if (_voltageInput == VOLTAGE_INPUT_5V) return round((_vRef / (float)DEFAULT_VREF) * getData());
-    else return round(getData() * ((float)(_res1 + _res2) / _res2));
-}
-
-/*==============================================================================================================*
-    RESET
- *==============================================================================================================*/
-
-void MCP3221::reset() {
-    setVref(DEFAULT_VREF);
-    setAlpha(DEFAULT_ALPHA);
-    setVoltageInput(VOLTAGE_INPUT_5V);
-    setSmoothingMethod(EMAVG);
-    setRes1(0);
-    setRes2(0);
-    setNumSamples(DEFAULT_NUM_SAMPLES);
-}
-
-/*==============================================================================================================*
-    GET LATEST I2C COMMUNICATION RESULT (0 = OK / 1..7 = ERROR)
- *==============================================================================================================*/
-
-byte MCP3221::getComResult() {
-    return _comBuffer;
-}

@@ -1,18 +1,15 @@
 /* 
-  MCP3221 LIBRARY - DEVICE INFORMATION STRING EXAMPLE
-  ---------------------------------------------------
-
+  MCP3221 LIBRARY - BASIC DEVICE TESTING EXAMPLE
+  ----------------------------------------------
+  
   INTRODUCTION
   ------------
-  This sketch presents a minimal example of extending the MCP3221 Library to include an additional function for generating a printable device
-  information string which may be useful, for example, during debugging sessions.
+  This sketch offers a quick & simple code for testing that the MCP3221 is hooked-up and operating correctly.
 
-  As can be seen in the sketch below, implementation of this extended functionality only requires adding a single 'include' to the code, namely: 
-  to that of the relevant *.h file (i.e. '/utility/MCP3221InfoStr.h').
-  
-  Note that this functional extension does come at the cost of an increased memory usage, and therefore it seemed preferable to maintain it 
-  as an optional add-on rather than include it in the core MCP3221 Library itself.
-  
+  The sketch begins by searching for the MCP3221 on the I2C Bus and then moves on to get a voltage reading from the device.
+
+  INPORTANT: The current library depends on the Arduino IDE's native 'Wire' library for I2C communication between the Arduino (Master) and the MCP3221 (Slave).
+
   WIRING DIAGRAM
   --------------
                                        MCP3221
@@ -27,7 +24,7 @@
   PIN 1 (VCC/VREF) - Serves as both Power Supply input and Voltage Reference for the ADC. Connect to Arduino 5V output or any other
                 equivalent power source (5.5V max). If using an external power source, remember to connect all GND's together
   PIN 2 (GND) - connect to Arduino GND
-  PIN 3 (AIN) - This pin can be left unconnected for the purpose of this sketch
+  PIN 3 (AIN) - Connect to Arduino's 3.3V Output
   PIN 4 (SDA) - Connect to Arduino's PIN A4 with a 2K2 (400MHz I2C Bus speed) or 10K (100MHz I2C Bus speed) pull-up resistor
   PIN 5 (SCL) - Connect to Arduino's PIN A5 with a 2K2 (400MHz I2C Bus speed) or 10K (100MHz I2C Bus speed) pull-up resistor
   DECOUPING:    Minimal decoupling consists of a 0.1uF Ceramic Capacitor between the VCC & GND PINS. For improved performance,
@@ -76,7 +73,6 @@
 */
 
 #include "MCP3221.h"
-#include "utility/MCP3221InfoStr.h"
 
 const byte DEV_ADDR = 0x4D;                       // I2C address of the MCP3221 (Change as needed)
 
@@ -86,23 +82,33 @@ void setup() {
     Serial.begin(9600);
     Wire.begin();
     while(!Serial);
-    Serial.print(F("\n\nCURRENT SETTINGS:\n"));
-    Serial.print(MCP3221InfoStr(mcp3221));
-    Serial.print(F("\nCHANGING TO NEW SETTINGS..."));
-    mcp3221.setVref(5112);
-    mcp3221.setSmoothingMethod(ROLLING_AVG);
-    mcp3221.setRes1(10251);
-    mcp3221.setRes2(4705);
-    mcp3221.setVoltageInput(VOLTAGE_INPUT_12V);
-    mcp3221.setAlpha(134);
-    mcp3221.setNumSamples(16);
-    Serial.print(F("DONE\n"));
-    Serial.print(MCP3221InfoStr(mcp3221));
-    Serial.print(F("\nRESETTING DEVICE..."));
-    mcp3221.reset();
-    Serial.print(F("DONE\n"));
-    Serial.print(MCP3221InfoStr(mcp3221));
-    Serial.print(F("\n\n"));
+    printDivider();
+    Serial.print(F("\nMCP3221 DEVICE TESTING\n"));
+    printDivider();
+    Serial.print(F("\nINITIATING SERIAL COMMUNICATION\n"));  
+    Serial.print(F("\nSerial Port is "));
+    Serial.print(Serial ? "Open\n" : "Could not be opened\n"); 
+    printDivider();
+    Serial.print(F("\nINITIALIZING TESTS\n"));
+    testPingDevice();
+    testGetReading();
 }
 
 void loop() {}
+
+void testPingDevice() {
+    Serial.print(F("\nSearching for device...Device "));
+    Serial.print(mcp3221.ping() ? (F("Not Found\n")) : (F("Found!\n")));
+    printDivider(); 
+}
+
+void testGetReading() {
+    unsigned int reading = mcp3221.getVoltage();
+    Serial.print(F("\n\nVoltage:"));
+    Serial.print(reading);
+    Serial.print(F("mV\n\n"));
+}
+
+void printDivider() {
+    Serial.print(F("\n-----------------------------------------\n"));
+}

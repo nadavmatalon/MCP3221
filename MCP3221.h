@@ -14,10 +14,54 @@
 
     The MCP3221 is a 12-Bit Single Channel ADC with hardware I2C interface.
 
-    This library contains a driver for the MCP3221 allowing the user to get raw conversion data or voltage 
-    readings based on that data, rolling average of these reading/voltages,  as well as the ability to set the 
-    voltage reference (0V-5V) and upper limit of voltage measurment (0V-12V).
+    This library contains a complete driver for the MCP3221 allowing the user to get raw conversion data, 
+    smoothed conversion data (Rollong-Average or EMAVG), or voltage readings ranging 0-5V or 0-12V (the latter
+    requires a voltage divider setup).
 
+ *===============================================================================================================*
+    DEVICE HOOKUP
+ *===============================================================================================================*
+
+                                   MCP3221
+                                   -------
+                            VCC --| •     |-- SCL
+                                  |       |
+                            GND --|       |
+                                  |       |
+                            AIN --|       |-- SDA
+                                   -------
+
+    PIN 1 (VCC/VREF) - Serves as both Power Supply input and Voltage Reference for the ADC. Connect to the Arduino 
+                       5V Output or any other equivalent power source (5.5V max). If using an external power source, 
+                       remember to connect all GND's together
+    PIN 2 (GND) - connect to Arduino GND
+    PIN 3 (AIN) - Connect to Arduino's 3.3V Output or the middle pin of a 10K potentiometer (other two pins go to 5V & GND)
+    PIN 4 (SDA) - Connect to Arduino's PIN A4 with a 2K2 (400MHz I2C Bus speed) or 10K (100MHz I2C Bus speed) pull-up resistor
+    PIN 5 (SCL) - Connect to Arduino's PIN A5 with a 2K2 (400MHz I2C Bus speed) or 10K (100MHz I2C Bus speed) pull-up resistor
+    DECOUPING:    Minimal decoupling consists of a 0.1uF Ceramic Capacitor between the VCC & GND PINS. For improved 
+                  performance, add a 1uF and a 10uF Ceramic Capacitors as well across these pins
+
+ *===============================================================================================================*
+    VOLTAGE DIVIDER HOOKUP (OPTIONAL: FOR 12V READINGS)
+ *===============================================================================================================*
+
+                      12V
+                       |            MCP3221
+                       |            -------
+                   R1 | |          |       |
+                      | |          |       |
+                       |       AIN |       |
+                       |-----------|       |
+                       |           |       |
+                      | |           -------
+                   R2 | |
+                       |
+                       |
+                      GND
+ 
+                        R1 - 10K Resistor
+                        R2 - 4K7 Resistor
+ 
  *===============================================================================================================*
     I2C ADDRESSES
  *===============================================================================================================*
@@ -36,11 +80,23 @@
     MCP3221A6T-E/OT   01001110    0x4E       78        GF
     MCP3221A7T-E/OT   01001111    0x4F       79        GG
 
-*===============================================================================================================*
-   VOLTAGE DIVIDER INPUT (OPTIONAL)
+ *===============================================================================================================*
+    DEVICE SETTING DEFAULTS
  *===============================================================================================================*
 
-   // ADD DIAGRAM
+    VOLTAGE REFERENCE:           4096mV  // this value is equal to the voltage fed to VCC
+    VOLTAGE INPUT:                  5V   // direct measurment of voltage at AIN pin (hw setup without voltage divider)
+    VOLTAGE DIVIDER RESISTOR 1:     0R   // value used when measuring voltage of up to 12V at AIN pin
+    VOLTAGE DIVIDER RESISTOR 2:     0R   // value used when measuring voltage of up to 12V at AIN pin
+    NUMBER OF SAMPLES:              10   // used by Rolling-Average smoothing method (range: 1-20 Samples)
+    ALPHA                          178   // factor used by EMAVG smoothing method (range: 1-256)
+
+ *===============================================================================================================*
+    BUG REPORTS
+ *===============================================================================================================*
+
+    Please report any bugs/issues/suggestions at the Github Repo of this library at: 
+    https://github.com/nadavmatalon/MCP3221
  
  *===============================================================================================================*
     LICENSE
@@ -128,9 +184,8 @@ namespace Mcp3221 {
             unsigned int getRes2();
             unsigned int getAlpha();
             byte         getNumSamples();
-            byte         getVoltageInput();
-            byte         getSmoothingMethod();
-            unsigned int getRawData();
+            byte         getVinput();
+            byte         getSmoothing();
             unsigned int getData();
             unsigned int getVoltage();
             byte         getComResult();
@@ -139,13 +194,14 @@ namespace Mcp3221 {
             void         setRes2(unsigned int newRes2);
             void         setAlpha(unsigned int newAlpha);
             void         setNumSamples(byte newNumSamples);
-            void         setVoltageInput(voltage_input_t newVoltageInput);
-            void         setSmoothingMethod(smoothing_t newSmoothingMethod);
+            void         setVinput(voltage_input_t newVinput);
+            void         setSmoothing(smoothing_t newSmoothing);
             void         reset();
         private:
             byte         _devAddr, _voltageInput, _smoothing, _numSamples, _comBuffer;
             unsigned int _vRef, _res1, _res2, _alpha;
             unsigned int _samples[MAX_NUM_SAMPLES];
+            unsigned int getRawData();
             unsigned int smoothData(unsigned int rawData);
             friend       MCP3221_PString MCP3221ComStr(const MCP3221&);
             friend       MCP3221_PString MCP3221InfoStr(const MCP3221&);
