@@ -90,10 +90,10 @@ void setup() {
     Serial.print(MCP3221InfoStr(mcp3221));
     Serial.print(F("\nCHANGING TO NEW SETTINGS..."));
     mcp3221.setVref(5112);
-    mcp3221.setSmoothingMethod(ROLLING_AVG);
+    mcp3221.setSmoothing(ROLLING_AVG);
     mcp3221.setRes1(10251);
     mcp3221.setRes2(4705);
-    mcp3221.setVoltageInput(VOLTAGE_INPUT_12V);
+    mcp3221.setVinput(VOLTAGE_INPUT_12V);
     mcp3221.setAlpha(134);
     mcp3221.setNumSamples(16);
     Serial.print(F("DONE\n"));
