@@ -104,7 +104,7 @@ void testPingDevice() {
 
 void testGetReading() {
     unsigned int reading = mcp3221.getVoltage();
-    Serial.print(F("\n\nVoltage:"));
+    Serial.print(F("\n\nVoltage:  "));
     Serial.print(reading);
     Serial.print(F("mV\n\n"));
 }
