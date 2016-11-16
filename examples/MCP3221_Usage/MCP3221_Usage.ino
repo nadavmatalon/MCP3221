@@ -95,18 +95,18 @@ void runTests() {
     Serial.print(F("\nGETTING CONFIGURATION\n"));
     testGetConfigData();
     printDivider();
-//    Serial.print(F("\nSETTING CONFIGURATION\n"));
-//    testSetConfigData();
-//    printDivider();
-    Serial.print(F("\nGETTING DATA READING\n"));
+    Serial.print(F("\nSETTING CONFIGURATION\n"));
+    testSetConfigData();
+    printDivider();
+    Serial.print(F("\nGETTING RAW DATA\n"));
     testGetData();
     printDivider();
-//    Serial.print(F("\nGETTING VOLTAGE READINGN\n"));
-//    testGetVoltage();
-//    printDivider();
-//    Serial.print(F("\nTESTING DEVICE RESET\n"));
-//    testReset();
-//    printDivider();
+    Serial.print(F("\nGETTING VOLTAGE READINGN\n"));
+    testGetVoltage();
+    printDivider();
+    Serial.print(F("\nTESTING DEVICE RESET\n"));
+    testReset();
+    printDivider();
 }
 
 void testPingDevice() {
@@ -116,51 +116,191 @@ void testPingDevice() {
 }
 
 void testGetConfigData() {
+    testGetVoltageReference();
+    testGetSmoothingMethod();
+    testGetVoltageInput();
+    testGetResistorOne();
+    testGetResistorTwo();
+    testGetAlpha();
+    testGetNumSamples();
+}
+
+void testGetVoltageReference() {
     Serial.print(F("\nVOLTAGE REFERENCE:\t"));
     Serial.print(mcp3221.getVref());
-    Serial.print(F("mV\nSMOOTHING METHOD:\t"));
+    Serial.print(F("mV\n"));
+}
+
+void testGetSmoothingMethod() {
+    Serial.print(F("\nSMOOTHING METHOD:\t"));
     switch (mcp3221.getSmoothing()) {
-        case (0): Serial.print(F("NO SMOOTHING")); break;
-        case (1): Serial.print(F("ROLLING-AVERAGE")); break;
-        case (2): Serial.print(F("EMAVG")); break;
+        case (0): Serial.print(F("NO SMOOTHING\n")); break;
+        case (1): Serial.print(F("ROLLING-AVERAGE\n")); break;
+        case (2): Serial.print(F("EMAVG\n")); break;
     }
+}
+
+void testGetVoltageInput() {
     Serial.print(F("\nVOLTAGE INPUT:\t\t"));
-    Serial.print(mcp3221.getVinput());
-    Serial.print(F("mV\nVD RESISTOR 1:\t\t"));
+    Serial.print(mcp3221.getVinput() ? (F("12V\n")) : (F("5V\n")));
+ }
+
+void testGetResistorOne() {
+    Serial.print(F("\nVD RESISTOR 1:\t\t"));
     Serial.print(mcp3221.getRes1());
-    Serial.print(F("R\nVD RESISTOR 2:\t\t"));
+    Serial.print(F("R\n"));
+}
+
+void testGetResistorTwo() {
+    Serial.print(F("\nVD RESISTOR 2:\t\t"));
     Serial.print(mcp3221.getRes2());
-    Serial.print(F("R\nALPHA:\t\t\t"));
+    Serial.print(F("R\n"));
+}
+
+void testGetAlpha() {
+    Serial.print(F("\nALPHA:\t\t\t"));
     Serial.print(mcp3221.getAlpha());
+    Serial.print(F("\n"));
+}
+
+void testGetNumSamples() {
     Serial.print(F("\nSAMPLES BUFFER:\t\t"));
     Serial.print(mcp3221.getNumSamples());
     Serial.print(F(" SAMPLES\n"));
 }
 
 void testSetConfigData() {
+    testSetVoltageReference();
+    testSetSmoothingMethod();
+    testSetVoltageInput();
+    testSetResistorOne();
+    testSetResistorTwo();
+    testSetAlpha();
+    testSetNumSamples();
+}
 
+void testSetVoltageReference() {
+    unsigned int voltageReferemces[4] = { 4650, 5700, 1170, DEFAULT_VREF };
+    for (byte i=0; i<4; i++) {
+        Serial.print(F("\nSetting Voltage Reference to "));
+        Serial.print(voltageReferemces[i]);
+        Serial.print(F("mV"));
+        mcp3221.setVref(voltageReferemces[i]);
+        Serial.print(F(" ... DONE\n"));
+        testGetVoltageReference();
+        quickDelay();
+    }
+}
+
+void testSetSmoothingMethod() {
+    smoothing_t smoothingMethods[3] = { NO_SMOOTHING, ROLLING_AVG, EMAVG };
+    for (byte i=0; i<3; i++) {
+        Serial.print(F("\nSetting Smoothing Method to "));
+        switch (i) {
+            case (0): Serial.print(F("NO SMOOTHING")); break;
+            case (1): Serial.print(F("ROLLING-AVERAGE")); break;
+            case (2): Serial.print(F("EMAVG")); break;
+        }  
+        mcp3221.setSmoothing(smoothingMethods[i]);
+        Serial.print(F(" ... DONE\n"));
+        testGetSmoothingMethod();
+        quickDelay();
+    }
+}
+
+void testSetVoltageInput() {
+    voltage_input_t voltageInputParams[2] = { VOLTAGE_INPUT_12V, VOLTAGE_INPUT_5V };
+    for (byte i=0; i<2; i++) {
+        Serial.print(F("\nSetting Voltage Input to "));
+        Serial.print(i ? (F("5V")) : (F("12V")));
+        mcp3221.setVinput(voltageInputParams[i]);
+        Serial.print(F(" ... DONE\n"));
+        testGetVoltageInput();
+        quickDelay();
+    }
+}
+
+void testSetResistorOne() {
+    unsigned int resistorOneParams[3] = { 6800, 10000, 0 };
+    for (byte i=0; i<3; i++) {
+        Serial.print(F("\nSetting Resistor One to "));
+        Serial.print(resistorOneParams[i]);
+        Serial.print(F("R"));
+        mcp3221.setRes1(resistorOneParams[i]);
+        Serial.print(F(" ... DONE\n"));
+        testGetResistorOne();
+        quickDelay();
+    }
+}
+
+void testSetResistorTwo() {
+    unsigned int resistorTwoParams[3] = { 2800, 4700, 0 };
+    for (byte i=0; i<3; i++) {
+        Serial.print(F("\nSetting Resistor Two to "));
+        Serial.print(resistorTwoParams[i]);
+        Serial.print(F("R"));
+        mcp3221.setRes2(resistorTwoParams[i]);
+        Serial.print(F(" ... DONE\n"));
+        testGetResistorTwo();
+        quickDelay();
+    }
+}
+void testSetAlpha() {
+    unsigned int alphaParams[4] = { 105, 0, 258, DEFAULT_ALPHA };
+    for (byte i=0; i<4; i++) {
+        Serial.print(F("\nSetting Alpha to "));
+        Serial.print(alphaParams[i]);
+        mcp3221.setAlpha(alphaParams[i]);
+        Serial.print(F(" ... DONE\n"));
+        testGetAlpha();
+        quickDelay();
+    }
+}
+
+void testSetNumSamples() {
+    byte numSamplesParams[4] = { 18, 0, 21, DEFAULT_NUM_SAMPLES };
+    for (byte i=0; i<4; i++) {
+        Serial.print(F("\nSetting Number of Samples to "));
+        Serial.print(numSamplesParams[i]);
+        Serial.print(F(" Samples"));
+        mcp3221.setNumSamples(numSamplesParams[i]);
+        Serial.print(F("...DONE\n"));
+        testGetNumSamples();
+        quickDelay();
+    }
 }
 
 void testGetData() {
-    Serial.print(F("\ndata:\t\t"));
-    Serial.print(mcp3221.getData());
-    Serial.print(F("\n\n"));
+    mcp3221.setSmoothing(NO_SMOOTHING);
+    for (byte i=0; i<10; i++) {
+        Serial.print(F("\nRaw Data:\t\t"));
+        Serial.print(mcp3221.getData());
+        Serial.print(F("\n\n"));
+        longDelay();
+    }
 }
 
 void testGetVoltage() {
-
+    for (byte i=0; i<10; i++) {
+        Serial.print(F("\nVoltage:\t\t"));
+        Serial.print(mcp3221.getVoltage());
+        Serial.print(F("mV\n\n"));
+        longDelay();
+    }
+    mcp3221.setSmoothing(EMAVG);
 }
 
 void testReset() {
     Serial.print(F("\nCurrent Settings:\n"));
     testGetConfigData();
     Serial.print(F("\nCreating New Settings..."));
-//    mcp3221.();
-//    mcp3221.();
-//    mcp3221.();
-//    mcp3221.();
-//    mcp3221.();
-//    mcp3221.();
+    mcp3221.setVref(5112);
+    mcp3221.setSmoothing(ROLLING_AVG);
+    mcp3221.setRes1(10251);
+    mcp3221.setRes2(4705);
+    mcp3221.setVinput(VOLTAGE_INPUT_12V);
+    mcp3221.setAlpha(134);
+    mcp3221.setNumSamples(16);
     Serial.print(F("DONE\n\nCurrent Settings:\n"));
     testGetConfigData();
     Serial.print(F("\nResetting Device to Default Settings..."));
@@ -176,3 +316,8 @@ void printDivider() {
 void quickDelay() {
     delay(50);
 }
+
+void longDelay() {
+    delay(750);
+}
+
