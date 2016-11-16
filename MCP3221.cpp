@@ -215,7 +215,7 @@ void MCP3221::setNumSamples(byte newNumSamples) {                               
 }
 
 /*==============================================================================================================*
-    SET VOLTAGE INPUT (12V INPUT READINGS REQUIRE A HARDWARE VOLTAGE DIVIDER)
+    SET VOLTAGE INPUT (NOTE: 12V INPUT READINGS REQUIRE A HARDWARE VOLTAGE DIVIDER)
  *==============================================================================================================*/
 
 void MCP3221::setVinput(voltage_input_t newVoltageInput) {     // PARAMS: VOLTAGE_INPUT_5V / VOLTAGE_INPUT_12V
@@ -251,9 +251,6 @@ void MCP3221::reset() {
 /*==============================================================================================================*
     GET RAW DATA
  *==============================================================================================================*/
-
-//  SINGLE CONVERSION:         B10011010 / 0x9A / 154
-//  CONTINUOUS CONVERSION:     B10011011 / 0x9B / 155
 
 unsigned int MCP3221::getRawData() {
     unsigned int rawData = 0;

@@ -9,44 +9,44 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-The __MCP3221__ is a 12-Bit Single-Channel ADC with a hardware I2C interface.
+The __MCP3221__ is a 12-Bit Single-Channel ADC with hardware I2C interface.
 
-This library contains a complete driver for the MCP3221 exposing all its available features, as well as the ability to apply smothing methods (Rolling-Average / Exponential-Moving-Average) to the continuously obtained data.
+This library contains a complete driver for the MCP3221 exposing all its available features. The library also contains configurable functions for obtaining either data or voltage reading from the device, as well as applying smoothing methods (Rolling-Average / Exponential-Moving-Average) to the said data/voltage readings. In addition, the library offers a built-in mechanism for calculating input from either 5V or 12V sources (the latter requiring a hardware voltage divider as the AIN pin of the MCP3221 cannot take more than 5.5V).
 
 [MCP3221 DATASHEET](http://ww1.microchip.com/downloads/en/DeviceDoc/21732D.pdf)
 
 ## Repository Contents
 
-- **MCP3221.h** - Library Header file.
-- **MCP3221.cpp** - Library Compilation.
-- **/utility** 
-  - **MCP3221InfoStr.h** - Header file containing a functional extention of the library to include generating printable information String (see Note #2 below).
-  - **MCP3221ComStr.h** - Header file containing a functional extention of the library to include generating a printable I2C Communication Result String (see Note #3 below).
-  - **MCP3221_PString.h** - Header file for PString class (lighter alternative to String class) 
-  - **MCP3221_PString.cpp** - Compilation file for PString class (lighter alternative to String class) 
+- **MCP3221.h** - Library Header file.  
+- **MCP3221.cpp** - Library Compilation file.  
+- **/utility**   
+  - **MCP3221InfoStr.h** - Header file containing a functional extention of the library to include generating printable information String (see Note #2 below).  
+  - **MCP3221ComStr.h** - Header file containing a functional extention of the library to include generating a printable I2C Communication Result String (see Note #3 below).  
+  - **MCP3221_PString.h** - Header file for PString class (lighter alternative to String class).  
+  - **MCP3221_PString.cpp** - Compilation file for PString class (lighter alternative to String class).  
 - **/examples**   
-  - **/MCP3221_Test**
-    - **MCP3221_Test.ino** - A basic sketch for testing whether the MCP3221 is hooked-up and operating correctly.
-  - **/MCP3221_Usage**
-    - **MCP3221_Usage.ino** - A much more extensive sketch offering a complete usage illustration, as well as a rubust testing mechanism.
-  - **/MCP3221_Info** 
-    - **MCP3221_Info.ino** - A short sketch showing how to generate a Printable Device Information String of the MCP3221's current settings (i.e. Configuration, Limit &anp; Hysteresis registers, etc.).
+  - **/MCP3221_Test**  
+    - **MCP3221_Test.ino** - A basic sketch for testing whether the MCP3221 is hooked-up and operating correctly.  
+  - **/MCP3221_Usage**  
+    - **MCP3221_Usage.ino** - A much more extensive sketch offering a complete usage illustration, as well as a rubust testing mechanism.  
+  - **/MCP3221_Info**  
+    - **MCP3221_Info.ino** - A short sketch showing how to generate a Printable Device Information String with the MCP3221's current settings.  
   - **/MCP3221_I2C_Status**
-    - **MCP3221_I2C_Status.ino** - A short sketch for verifying I2C communication has been established between the controller and the MCP3221.
+    - **MCP3221_I2C_Status.ino** - A short sketch for verifying I2C communication has been established between the controller (master) and the MCP3221 (slave).  
 - **/extras**
   - **License.txt** - A cope of the end-user license agreement.  
   - **/eagle**
     - **MCP3221.sch** - Schematic file for the MCP3221 breakout board.
-    - **MCP3221.brd** - Board layout file for the MCP3221 breakout board.
+    - **MCP3221.brd** - Board layout for the MCP3221 breakout board.
 - **keywords.txt** - Keywords for this library which will be highlighted in sketches within the Arduino IDE. 
 - **library.properties** - General library properties for the Arduino's IDE (>1.5) Library Package Manager.
 - **README.md** - The readme file for this library.
 - **library.json** - JSON file for the Arduino's IDE (>1.5) Package Manager.
 
 ## HOOK-UP
-* __PIN 1 (VCC/VREF)__ - Serves as both Power Supply input and Voltage Reference for the ADC. Connect 5V output of Arduino's' or other equivalent power source (5.5V max). However, if using external power source, remember to connect all GND's together.
-* __PIN 2 (GND)__ - connect to Arduino GND
-* __PIN 3 (VIN)__ - Connect input voltage to be measured (RANGE: GND - VCC, Min: 0V, Max: 5.5V). For higher voltage readings (eg. Min: 8.444V, Max: 12.881V), use a voltage divider (Resistor 1: 10K; Resisor 2: 4K7)
+* __PIN 1 (VCC/VREF)__ - Serves asimultaniously as Power Supply input and Voltage Reference for the ADC. Connect 5V output of Arduino's' or other equivalent power source (5.5V max). However, if using external power source, remember to connect all GND's together.
+* __PIN 2 (GND)__ - Connect to Arduino GND
+* __PIN 3 (VIN)__ - Connect input voltage to be measured (RANGE: GND - VCC, Min: 0V, Max: 5.5V). For higher voltage readings (e.g. Min: 8.444V, Max: 12.881V), use a voltage divider (Resistor 1: 10K; Resisor 2: 4K7)
 * __PIN 4 (SDA)__ - Connect to Arduino's PIN A4 with a 2K2 (400MHz I2C Bus speed) or 10K (100MHz I2C Bus speed) pull-up resistor
 * __PIN 5 (SCL)__ - Connect to Arduino's PIN A5 with a 2K2 (400MHz I2C Bus speed) or 10K (100MHz I2C Bus speed) pull-up resistor
 * __DECOUPING__: Minimal decoupling consists of a 0.1uF Ceramic Capacitor between the VCC & GND PINS. For improved performance, add a 1uF and a 10uF Ceramic Capacitors as well across these pins.
@@ -94,15 +94,14 @@ Next, include the library at the top of the sketch as follows:
 At this point you can construct a new MPC3221 instance(s) by using the following command (at the top of the sketch after the 'include' line):
 
 ```
-MCP3221 device_name(device_address);
+MPC3221 device_name(device_address);
 ```
 
->Replace '__device_name__' with a name of your choice. Also, make sure to replace '__device_address__' with the specific I2C address of your device if needed (see I2C ADDRESSES section above).
+>Replace '__device_name__' with a name of your choice. Also, make sure to replace  '__device_address__' with the specific I2C address of your device (see I2C ADDRESSES Section above).
 
+Next, make sure to include an instruction for initializing the I2C Bus for the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library, as follows:
 
-Next, make sure to inlude an instruction for initializing the I2C Bus for the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library, as follows:
-
-(There's no need to include the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library at the top of the sketch as it's already included by the MCP3221 Library)
+(There's no need to include the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library at the top of the sketch as it's already included by the MCP9802 Library)
 
 ```
 void setup() {
@@ -131,32 +130,95 @@ Description:&nbsp;&nbsp;&nbsp;Searches for the MCP3221 at the pre-defined I2C Bu
 \>6 ... Unlisted error (potential future implementation/s)<br>
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte  
 
-
-
-__reset();__  
+__getVref();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Resets the device to its default settings  
-Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Gets the current setting of the 'Voltage Reference' parameter in mV (default: 4096mV). Acceptable range: 2700-5500mV.   
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
+
+__getRes1();__  
+Parameters:&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Gets the current value of Resistor 1 (in Ω) of the hardware voltage divider (if used). Set automatically to 0Ω if device is initialized with Voltage Input set to 5V (default), or to 10KΩ if device is initialized with Voltage Input set to 12V (value can be changed after device initialization). 
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
+
+__getRes2();__  
+Parameters:&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Gets the current value of Resistor 2 (in Ω) of the hardware voltage divider (if used). Set automatically to 0Ω if device is initialized with Voltage Input set to 5V (default), or to 4K7Ω if device is initialized with Voltage Input set to 12V (value can be changed after device initialization). 
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
+
+__getAlpha();__  
+Parameters:&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Gets the current value of the 'Alpha' parameter used by the 'EMAVG' smoothing method (default: 178) 
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
+
+__getNumSamples();__  
+Parameters:&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Gets the current number of samples used by the 'Rolling-Average' smoothing method (default: 10 Samples)
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte  
+
+__getVinput();__  
+Parameters:&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Gets the voltage input settings (5V [default] / 12V) used for voltage reading calculations  
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte   
+
+__getSmoothing();__  
+Parameters:&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Gets the current smoothing method (0 = NO SMOOTHING / 1 = ROLLING-AVERAGE / 2 = EMAVG [default]) used for voltage reading calculations.    
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte   
 
 __getData();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the latest raw ADC reading  
-Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Int  
+Description:&nbsp;&nbsp;&nbsp;Gets the latest conversion data from the device (the data is automatically smoothed by the selected smoothing method if used). To obtain raw data from the device simply set the Smoothing Method settings to 'NO SMOOTHING'.  
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
 
-__getVolt();__  
+__getVoltage();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the latest ADC reading (in mV, to avoid floating point calculations)  
-Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Int  
-
-__getPercent();__  
-Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the latest ADC reading in Percentage format (0-100%)  
-Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Byte  
+Description:&nbsp;&nbsp;&nbsp;Gets the latest voltage reading (in mV) from the device (the reading is automatically smoothed by the selected smoothing method if used). To obtain unmodified voltage readings from the device simply set the Smoothing Method settings to 'NO SMOOTHING'.   
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
 
 __getComResult();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
 Description:&nbsp;&nbsp;Returns the latest I2C Communication result code (see Success/Error codes above)  
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte  
+
+__setVref();__  
+Parameters:&nbsp;&nbsp;&nbsp;unsigned int  
+Description:&nbsp;&nbsp;&nbsp;Sets the current value of the 'Voltage Reference' parameter (in mV). This value can be obtained by measuring the input voltage on the devices VCC pin    
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None  
+
+__setRes1();__  
+Parameters:&nbsp;&nbsp;&nbsp;unsigned int  
+Description:&nbsp;&nbsp;&nbsp;sets the current value of Resistor 1 (in Ω) of the hardware voltage divider (if used)  
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None  
+
+__setRes2();__  
+Parameters:&nbsp;&nbsp;&nbsp;unsigned int  
+Description:&nbsp;&nbsp;&nbsp;Sets the current value of Resistor 2 (in Ω) of the hardware voltage divider (if used)  
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None  
+
+__setAlpha();__  
+Parameters:&nbsp;&nbsp;&nbsp;unsigned int  
+Description:&nbsp;&nbsp;&nbsp;Sets the current value of the 'Alpha' parameter (used by the 'EMAVG' smoothing method). Acceptable range: 0-256 (attempting to set this parameter to lower/heigher values, sets actual value to minimum/maximum respectively).   
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None  
+
+__setNumSamples();__  
+Parameters:&nbsp;&nbsp;&nbsp;byte  
+Description:&nbsp;&nbsp;&nbsp;Sets the current number of samples used by the 'Rolling-Average' smoothing method. Acceptable range: 1-20 samples (attempting to set this parameter to lower/heigher values, sets actual value to minimum/maximum respectively).   
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte  
+
+__setVinput();__  
+Parameters:&nbsp;&nbsp;&nbsp;VOLTAGE_INPUT_5V [default] / VOLTAGE_INPUT_12V  
+Description:&nbsp;&nbsp;&nbsp;Sets the voltage input parameter (5V or 12V) which is used for voltage reading calculations  
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None   
+
+__setSmoothing();__  
+Parameters:&nbsp;&nbsp;&nbsp;NO_SMOOTHING / ROLLING_AVERAGE / EMAVG  
+Description:&nbsp;&nbsp;&nbsp;Sets the current smoothing method used for voltage reading calculations  
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None     
+
+__reset();__  
+Parameters:&nbsp;&nbsp;&nbsp;None  
+Description:&nbsp;&nbsp;&nbsp;Resets the device to its default settings  
+Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None  
 
 __Destructor__  
 If you want to destruct an instantiated MCP3221 object, you can use the following method to do so:  
