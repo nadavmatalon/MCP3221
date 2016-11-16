@@ -9,7 +9,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-The __MCP3221__ is a 12-Bit Single-Channel ADC with hardware I2C interface.
+The MCP3221 is a 12-Bit Single-Channel ADC with hardware I2C interface.
 
 This library contains a complete driver for the MCP3221 exposing all its available features. The library also contains configurable functions for obtaining either data or voltage reading from the device, as well as applying smoothing methods (Rolling-Average / Exponential-Moving-Average) to the said data/voltage readings. In addition, the library offers a built-in mechanism for calculating input from either 5V or 12V sources (the latter requiring a hardware voltage divider as the AIN pin of the MCP3221 cannot take more than 5.5V).
 
@@ -55,7 +55,7 @@ This library contains a complete driver for the MCP3221 exposing all its availab
 
 1) __I2C Communications Library Dependency__
 
-This library depends on the Arduino IDE's native '[Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire)' library for I2C communication between the Arduino (Master) and the MCP3221 (Slave). 
+This library depends on the Arduino IDE's native [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) library for I2C communication between the Arduino (Master) and the MCP3221 (Slave). 
 
 2) __Device Information String__
 
@@ -71,7 +71,7 @@ Each MCP3221 has 1 of 8 possible I2C addresses (factory hardwired & recognized b
 
 |PART NO.         | BIN      | HEX  | DEC | MARKING |
 |-----------------|----------|------|-----|---------|
-||MCP3221A0T-E/OT | 01001000 | 0x48 | 72  | GE      |
+| MCP3221A0T-E/OT | 01001000 | 0x48 | 72  | GE      |
 | MCP3221A1T-E/OT | 01001001 | 0x49 | 73  | GH      |
 | MCP3221A2T-E/OT | 01001010 | 0x4A | 74  | GB      |
 | MCP3221A3T-E/OT | 01001000 | 0x4B | 75  | GC      |
@@ -97,11 +97,11 @@ At this point you can construct a new MPC3221 instance(s) by using the following
 MPC3221 device_name(device_address);
 ```
 
->Replace '__device_name__' with a name of your choice. Also, make sure to replace  '__device_address__' with the specific I2C address of your device (see I2C ADDRESSES Section above).
+>Replace '__device_name__' with a name of your choice. Also, remember to replace  '__device_address__' with the specific I2C address of your device (see I2C ADDRESSES Section above).
 
 Next, make sure to include an instruction for initializing the I2C Bus for the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library, as follows:
 
-(There's no need to include the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library at the top of the sketch as it's already included by the MCP9802 Library)
+>There's no need to include the [Wire](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/Wire) Library at the top of the sketch as it's already included internally by the MCP3221 Library
 
 ```
 void setup() {
@@ -137,32 +137,32 @@ Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int
 
 __getRes1();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the current value of Resistor 1 (in Ω) of the hardware voltage divider (if used). Set automatically to 0Ω if device is initialized with Voltage Input set to 5V (default), or to 10KΩ if device is initialized with Voltage Input set to 12V (value can be changed after device initialization). 
+Description:&nbsp;&nbsp;&nbsp;Gets the current value of Resistor 1 (in Ω) of the hardware voltage divider (if used). Set automatically to 0Ω if device is initialized with Voltage Input set to 5V (default), or to 10KΩ if device is initialized with Voltage Input set to 12V (value can be changed after device initialization).  
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
 
 __getRes2();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the current value of Resistor 2 (in Ω) of the hardware voltage divider (if used). Set automatically to 0Ω if device is initialized with Voltage Input set to 5V (default), or to 4K7Ω if device is initialized with Voltage Input set to 12V (value can be changed after device initialization). 
+Description:&nbsp;&nbsp;&nbsp;Gets the current value of Resistor 2 (in Ω) of the hardware voltage divider (if used). Set automatically to 0Ω if device is initialized with Voltage Input set to 5V (default), or to 4K7Ω if device is initialized with Voltage Input set to 12V (value can be changed after device initialization).  
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
 
 __getAlpha();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the current value of the 'Alpha' parameter used by the 'EMAVG' smoothing method (default: 178) 
+Description:&nbsp;&nbsp;&nbsp;Gets the current value of the 'Alpha' parameter used by the 'EMAVG' smoothing method (default: 178).  
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unsigned int  
 
 __getNumSamples();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the current number of samples used by the 'Rolling-Average' smoothing method (default: 10 Samples)
+Description:&nbsp;&nbsp;&nbsp;Gets the current number of samples used by the 'Rolling-Average' smoothing method (default: 10 Samples).  
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte  
 
 __getVinput();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the voltage input settings (5V [default] / 12V) used for voltage reading calculations  
+Description:&nbsp;&nbsp;&nbsp;Gets the voltage input settings (5V [default] / 12V) used for voltage reading calculations.  
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte   
 
 __getSmoothing();__  
 Parameters:&nbsp;&nbsp;&nbsp;None  
-Description:&nbsp;&nbsp;&nbsp;Gets the current smoothing method (0 = NO SMOOTHING / 1 = ROLLING-AVERAGE / 2 = EMAVG [default]) used for voltage reading calculations.    
+Description:&nbsp;&nbsp;&nbsp;Gets the current smoothing method (0 = NO SMOOTHING / 1 = ROLLING-AVERAGE / 2 = EMAVG [default]) used for voltage reading calculations.  
 Returns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte   
 
 __getData();__  
