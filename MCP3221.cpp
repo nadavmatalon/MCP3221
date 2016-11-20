@@ -86,7 +86,7 @@ MCP3221::~MCP3221() {}
 
 byte MCP3221::ping() {
     Wire.beginTransmission(_devAddr);
-    return Wire.endTransmission();
+    return _comBuffer = Wire.endTransmission();
 }
 
 /*==============================================================================================================*
@@ -256,6 +256,7 @@ unsigned int MCP3221::getRawData() {
     unsigned int rawData = 0;
     Wire.requestFrom(_devAddr, DATA_BYTES);
     if (Wire.available() == DATA_BYTES) rawData = (Wire.read() << 8) | (Wire.read());
+    else ping();
     return rawData;
 }
 
