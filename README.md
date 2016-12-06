@@ -40,6 +40,8 @@ Source: [MCP3221 DATASHEET](http://ww1.microchip.com/downloads/en/DeviceDoc/2173
   - **/eagle**
     - **MCP3221.sch** - Schematic file for the MCP3221 breakout board.
     - **MCP3221.brd** - Board layout for the MCP3221 breakout board.
+  - **/images**
+    - **mcp3221_pinout.png** - Pinout image of the MCP3221.
 - **keywords.txt** - Keywords for this library which will be highlighted in sketches within the Arduino IDE. 
 - **library.properties** - General library properties for the Arduino's IDE (>1.5) Library Package Manager.
 - **README.md** - The readme file for this library.
