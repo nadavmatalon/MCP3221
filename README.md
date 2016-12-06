@@ -13,7 +13,7 @@ The MCP3221 is a 12-Bit Single-Channel ADC with hardware I2C interface.
 
 This library contains a complete driver for the MCP3221 exposing all its available features. The library also contains configurable functions for obtaining either data or voltage reading from the device, as well as applying smoothing methods (Rolling-Average / Exponential-Moving-Average) to the said data/voltage readings. In addition, the library offers a built-in mechanism for calculating input from either 5V or 12V sources (the latter requiring a hardware voltage divider as the AIN pin of the MCP3221 cannot take more than 5.5V).
 
-<img src="extras/images/mcp3221_pinout.png" alt="MCP3221 PINOUT" width="250" height="150">
+<img src="extras/images/mcp3221_pinout.png" alt="MCP3221 PINOUT" width="300" height="240">
 
 Source: [MCP3221 DATASHEET](http://ww1.microchip.com/downloads/en/DeviceDoc/21732D.pdf)
 
