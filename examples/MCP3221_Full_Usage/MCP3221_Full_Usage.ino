@@ -1,6 +1,6 @@
 /*
-    MCP3221 LIBRARY - COMPLETE USAGE EXAMPLE
-    ----------------------------------------
+    MCP3221 LIBRARY - FULL USAGE EXAMPLE
+    ------------------------------------
 
     INTRODUCTION
     ------------
@@ -36,8 +36,8 @@
     Each MCP3221 has 1 of 8 possible I2C addresses (factory hardwired & recognized by its specific part number & top marking
     on the package itself):
 
-       PART                  DEVICE I2C ADDRESS          PART
-      NUMBER             (BIN)      (HEX)     (DEC)     MARKING
+          PART                 DEVICE I2C ADDRESS          PART
+         NUMBER            (BIN)      (HEX)     (DEC)     MARKING
     MCP3221A0T-E/OT       01001000      0x48       72       GE
     MCP3221A1T-E/OT       01001001      0x49       73       GH
     MCP3221A2T-E/OT       01001010      0x4A       74       GB
