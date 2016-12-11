@@ -53,10 +53,6 @@
   -----------
   Please report any bugs/issues/suggestions at the GITHUB Repository of this library at: https://github.com/nadavmatalon/MCP3221
 
-  BUG REPORTS
-  -----------
-  Please report any bugs/issues/suggestions at the GITHUB Repository of this library at: https://github.com/nadavmatalon/MCP3221
-
   LICENSE
   -------
   The MIT License (MIT)
