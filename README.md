@@ -29,8 +29,10 @@ Source: [MCP3221 DATASHEET](http://ww1.microchip.com/downloads/en/DeviceDoc/2173
 - **/examples**   
   - **/MCP3221_Test**  
     - **MCP3221_Test.ino** - A basic sketch for testing whether the MCP3221 is hooked-up and operating correctly.  
-  - **/MCP3221_Usage**  
-    - **MCP3221_Usage.ino** - A much more extensive sketch offering a complete usage illustration, as well as a rubust testing mechanism.  
+  - **/MCP3221_Basic_Usage**  
+    - **MCP3221_Baisc_Usage.ino** - A minimal sketch for getting a continuous voltage reading from the MCP3221.  
+  - **/MCP3221_Full_Usage**  
+    - **MCP3221_Full_Usage.ino** - A more extensive sketch offering a complete usage illustration, as well as a rubust testing mechanism.  
   - **/MCP3221_Info**  
     - **MCP3221_Info.ino** - A short sketch showing how to generate a Printable Device Information String with the MCP3221's current settings.  
   - **/MCP3221_I2C_Status**
