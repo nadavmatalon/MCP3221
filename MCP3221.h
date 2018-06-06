@@ -197,11 +197,12 @@ namespace Mcp3221 {
             void         setVinput(voltage_input_t newVinput);
             void         setSmoothing(smoothing_t newSmoothing);
             void         reset();
+        unsigned int getRawData();
+
         private:
             byte         _devAddr, _voltageInput, _smoothing, _numSamples, _comBuffer;
             unsigned int _vRef, _res1, _res2, _alpha;
             unsigned int _samples[MAX_NUM_SAMPLES];
-            unsigned int getRawData();
             unsigned int smoothData(unsigned int rawData);
             friend       MCP3221_PString MCP3221ComStr(const MCP3221&);
             friend       MCP3221_PString MCP3221InfoStr(const MCP3221&);

@@ -58,7 +58,7 @@ MCP3221::MCP3221(
      _smoothing(smoothingMethod),
      _numSamples(numSamples)
      {
-        _samples[MAX_NUM_SAMPLES] = { 0 };
+        memset(_samples, 0, sizeof(_samples));
         if (((res1 != 0) && (res2 != 0)) && (_voltageInput == VOLTAGE_INPUT_12V)) {
             _res1 = res1;
             _res2 = res2;
@@ -267,7 +267,7 @@ unsigned int MCP3221::getRawData() {
 unsigned int MCP3221::smoothData(unsigned int rawData) {
     unsigned int smoothedData;
     if (_smoothing == EMAVG) {                                                  // Exmponential Moving Average
-        static unsigned int emAvg = rawData;
+        unsigned int emAvg = rawData;
         emAvg = (_alpha * (unsigned long)rawData + (MAX_ALPHA - _alpha) * (unsigned long)emAvg) / MAX_ALPHA;
         smoothedData = emAvg;
     } else {                                                                    // Rolling-Average
